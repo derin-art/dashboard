@@ -9,8 +9,10 @@ import {
   ScriptableContext,
 } from "chart.js";
 import { Gradient } from "chartjs-plugin-gradient/types/options";
+import { BounceLoader } from "react-spinners";
 import gradient from "chartjs-plugin-gradient";
 import BitcoinIcon from "../public/icon/BitcoinIcon";
+import CoinIcon from "../public/icon/CoinIcon";
 import useMediaQuery from "../hooks/useMediaQuery";
 import { Doughnut, Line, ChartProps } from "react-chartjs-2";
 import { format } from "date-fns";
@@ -49,6 +51,8 @@ type ChartViewProps = {
     }[];
     res: any;
   };
+  searchName: string;
+  setSearchName: any;
 };
 
 export default function ChartView(props: ChartViewProps) {
@@ -104,42 +108,71 @@ export default function ChartView(props: ChartViewProps) {
     { name: "6mth" },
   ];
 
+  const responseErr = props.coinRes.res === 500;
+
   return (
     <div className="w-full h-fit lg:p-0 p-2 relative">
       <div
         className={`w-full ${
-          searchText ? "h-48" : "h-10"
+          props.searchName ? "h-48" : "h-10"
         } duration-300 border border-gray-600 mb-4 p-1 rounded-lg flex  flex-col`}
       >
         <div className="flex items-center w-full h-fit  mt-[2px]">
-          <button className="h-full border-r rounded-full w-10 flex items-center justify-center border-gray-600">
-            {BitcoinIcon("fill-green-400")}
+          <button className="h-full rounded-full w-10 flex items-center justify-center ">
+            {CoinIcon("fill-green-400")}
           </button>
           <input
             onChange={(e) => {
-              setSearchText(e.target.value);
+              props.setSearchName(e.target.value);
               props.fetchCoinList();
             }}
-            className="w-11/12 text-sm ml-2 mr-2 font-inter h-fit bg-transparent focus:outline-none focus:ring-[1px] text-green-400 focus:ring-gray-600"
+            value={props.searchName}
+            placeholder={"Search for a coin"}
+            className="w-11/12 text-sm ml-2 mr-[14px] font-inter h-fit bg-transparent focus:outline-none focus:ring-b-[1px] text-green-400 focus:ring-gray-600"
           ></input>
         </div>
-        <div className="h-full overflow-auto text-white text-xs flex flex-col">
-          {props.coinRes.data.length > 0 &&
-            props.coinRes.data.map((coin) => {
-              if (coin.name.toLowerCase().includes(searchText.toLowerCase())) {
-                return (
-                  <button
-                    className="p-2 border border-b border-gray-600"
-                    key={coin.id}
-                  >
-                    {coin.name}
-                  </button>
-                );
+        <div
+          className={`h-full overflow-auto text-white text-xs ${
+            props.searchName ? "flex" : "hidden"
+          } flex-col mt-4 p-2`}
+        >
+          {props.coinRes.data ? (
+            props.coinRes.data.filter((coin) => {
+              if (
+                coin.name.toLowerCase().includes(props.searchName.toLowerCase())
+              ) {
+                return coin;
               }
-            })}
+            }).length > 0 ? (
+              props.coinRes.data.map((coin) => {
+                if (
+                  coin.name
+                    .toLowerCase()
+                    .includes(props.searchName.toLowerCase())
+                ) {
+                  return (
+                    <button
+                      className="p-2 mb-2 border border-gray-600"
+                      key={coin.id}
+                    >
+                      {coin.name}
+                    </button>
+                  );
+                }
+              })
+            ) : (
+              <div className="w-full h-full items-center justify-center text-white flex">
+                No coin matches your coin parameters
+              </div>
+            )
+          ) : (
+            <div className="w-full h-full mb-8 items-center justify-center flex ">
+              <BounceLoader color="#4ade80"></BounceLoader>
+            </div>
+          )}
         </div>
       </div>
-
+      <div className="font-Unbounded mb-2 text-green-400">Bitcoin</div>
       <div className="w-fit h-fit hidden lg:block">
         <div className="h-10 w-10 border-gray-600 border absolute right-2 text-[10px] text-white font-inter rounded-full top-14 flex items-center justify-center">
           1wk

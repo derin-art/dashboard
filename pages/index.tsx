@@ -4,11 +4,13 @@ import ChartView from "../components/ChartView";
 import styles from "../styles/Home.module.css";
 import { PropagateLoader, BounceLoader } from "react-spinners";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
 import RecentTrans from "../components/RecentTrans";
 import DashDisplay from "../components/DashDisplay";
 import chartData from "../mockData/chartData";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { type } from "os";
+import "react-toastify/dist/ReactToastify.css";
 import DebitCards from "../components/DebitCards";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -25,8 +27,11 @@ export type dataArray = {
 }[];
 
 export default function Home() {
+  const toastId: any = useRef(null);
+  const customId = "custom-id-yes";
   const [coinData, setCoinData] = useState([...chartData]);
   const [coinSearchRes, setCoinSearchRes] = useState({ data: [], res: {} });
+  const [searchName, setSearchName] = useState("");
   const fecthData = async () => {
     await axios
       .get(
@@ -50,11 +55,25 @@ export default function Home() {
       .get("https://api.coingecko.com/api/v3/coins/list")
       .catch((err) => {
         console.log(err);
+        setCoinSearchRes((prev: any) => {
+          return { ...prev, data: null, res: 500 };
+        });
+        if (!toast.isActive(toastId.current)) {
+          toast.error("Search Error", {
+            className: "text-xs",
+            toastId: customId,
+          });
+        }
+
+        return;
       })
       .then((data: any) => {
-        setCoinSearchRes((prev) => {
-          return { ...prev, data: data.data };
-        });
+        console.log(data);
+        if (data) {
+          setCoinSearchRes((prev) => {
+            return { ...prev, data: data.data, res: data.status };
+          });
+        }
       });
   };
 
@@ -65,6 +84,7 @@ export default function Home() {
 
   return (
     <div className="w-full h-full  bg-ultraBlack font-inter ">
+      <ToastContainer></ToastContainer>
       <div className="w-full h-fit flex flex-col items-center ">
         <div className="text-base font-inter p-4 py-8 self-start text-white">
           Welcome <div className="text-green-400">Adrien</div>
@@ -76,6 +96,8 @@ export default function Home() {
           <ChartView
             coinRes={coinSearchRes}
             fetchCoinList={fetchCoin}
+            searchName={searchName}
+            setSearchName={setSearchName}
             dataArray={coinData}
           ></ChartView>
         )}
