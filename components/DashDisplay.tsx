@@ -10,8 +10,8 @@ const wallets = [
 export default function DashDisplay() {
   const [galleryIndex, setGalleryIndex] = useState(0);
   return (
-    <div className="w-full  p-4 lg:w-[430px]">
-      <div className=" border border-gray-600 rounded-3xl relative carbonBg text-white  rounded p-4 h-48 h-full w-full font-Unbounded">
+    <div className="w-full text-base p-4 lg:w-[430px] xl:w-[500px]">
+      <div className=" border border-gray-600 rounded-3xl relative carbonBg text-white  rounded p-4 h-48 lg:h-56 xl:h-60 h-full w-full font-Unbounded">
         <div className=" h-full flex items-center justify-center">
           <SwipeableViews
             onChangeIndex={(index) => {

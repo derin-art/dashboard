@@ -111,7 +111,7 @@ export default function ChartView(props: ChartViewProps) {
   const responseErr = props.coinRes.res === 500;
 
   return (
-    <div className="w-full h-fit lg:p-0 p-2 relative ">
+    <div className="w-full h-fit lg:p-4  p-2 relative ">
       <div
         className={`w-full ${
           props.searchName ? "h-48" : "h-10"
@@ -145,14 +145,20 @@ export default function ChartView(props: ChartViewProps) {
               }
             }).length > 0 ? (
               props.coinRes.data.map((coin) => {
-                return (
-                  <button
-                    className="p-2 mb-2 border border-gray-600"
-                    key={coin.id}
-                  >
-                    {coin.name}
-                  </button>
-                );
+                if (
+                  coin.name
+                    .toLowerCase()
+                    .includes(props.searchName.toLowerCase())
+                ) {
+                  return (
+                    <button
+                      className="p-2 mb-2 border border-gray-600"
+                      key={coin.id}
+                    >
+                      {coin.name}
+                    </button>
+                  );
+                }
               })
             ) : (
               <div className="w-full h-full items-center justify-center text-white flex">
@@ -174,7 +180,7 @@ export default function ChartView(props: ChartViewProps) {
           }}
           className={`${
             clickedSetRange ? "w-fit" : "w-10"
-          } h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter rounded-full top-0 flex  items-center justify-center`}
+          } h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter lg:hidden rounded-full top-0 flex  items-center justify-center`}
         >
           {timeRanges.map((item) => {
             if (item.name !== "1day") {
@@ -194,8 +200,235 @@ export default function ChartView(props: ChartViewProps) {
             {timeRanges[1].name}
           </button>
         </div>
+        <div
+          onClick={() => {
+            setClickedSetRange((prev) => !prev);
+          }}
+          className={`w-fit hidden h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter rounded-full top-0 lg:flex  items-center justify-center`}
+        >
+          {timeRanges.map((item) => {
+            if (item.name !== "1day") {
+              return (
+                <button
+                  key={item.name}
+                  className={` w-10 h-10 border rounded-full border-t border-gray-600`}
+                >
+                  {item.name}
+                </button>
+              );
+            }
+          })}
+          <button className="border w-10 h-10 border border-gray-600 rounded-full">
+            {timeRanges[1].name}
+          </button>
+        </div>
       </div>
-      <div className="w-fit h-fit hidden lg:block relative">
+
+      <div className="w-fit h-fit hidden 2xl:block relative">
+        <Line
+          data={GraphData}
+          style={{
+            width: !isMobile ? 1350 : 350,
+            height: !isMobile ? 550 : 230,
+            border: "0px #242424 solid",
+            borderRadius: "10px",
+            color: "#242424",
+            padding: "30px",
+          }}
+          options={{
+            layout: {},
+            elements: {
+              point: {
+                radius: 1.5,
+
+                pointStyle: "circle",
+                backgroundColor: "#242424",
+                borderColor: "#242424",
+              },
+            },
+            responsive: true,
+            scales: {
+              y: {
+                border: { display: false },
+
+                grid: {
+                  display: false, // <-- this removes y-axis line
+                  lineWidth: function (context) {
+                    return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                  },
+                  color: "#2E294E",
+                  drawOnChartArea: false,
+                  tickColor: "#2E294E",
+                },
+                ticks: {
+                  padding: 2,
+                  font: { family: "inter", size: 10 },
+                  color: "white",
+                  display: true,
+                },
+              },
+              x: {
+                bounds: "ticks",
+                border: { display: false },
+
+                grid: {
+                  lineWidth: 0,
+                  tickColor: transFormArrayData().map((item, index) => {
+                    if (index % 4 === 0) {
+                      return "white";
+                    } else return "";
+                  }),
+                  // <-- this removes vertical lines between bars
+                },
+                ticks: {
+                  padding: 20,
+                  font: { family: "inter", size: 12 },
+                  color: transFormArrayData().map((item, index) => {
+                    return "white";
+                  }),
+                  autoSkip: true,
+                  maxTicksLimit: 10,
+                  labelOffset: 4,
+                  count: 4,
+                  callback: (t, i) => {
+                    return transFormArrayData()[i].timeLabel;
+                  },
+                },
+              },
+            },
+
+            plugins: {
+              title: {
+                display: false,
+                text: "Users Gained between 2016-2020",
+              },
+              legend: {
+                display: false,
+                labels: {
+                  font: {
+                    family: "var(--inter-font)",
+                  },
+                  color: "red",
+                },
+              },
+              tooltip: {
+                bodySpacing: 8,
+                enabled: true,
+              },
+            },
+
+            borderColor: "rgba(0,22, 222, 200)",
+            backgroundColor: "rgb(255 237 213)",
+
+            animation: { delay: 1, easing: "linear" },
+            maintainAspectRatio: false,
+          }}
+        />
+      </div>
+
+      <div className="w-fit h-fit hidden xl:block 2xl:hidden relative">
+        <Line
+          data={GraphData}
+          style={{
+            width: !isMobile ? 1050 : 350,
+            height: !isMobile ? 600 : 230,
+            border: "0px #242424 solid",
+            borderRadius: "10px",
+            color: "#242424",
+            padding: "30px",
+          }}
+          options={{
+            layout: {},
+            elements: {
+              point: {
+                radius: 1.5,
+
+                pointStyle: "circle",
+                backgroundColor: "#242424",
+                borderColor: "#242424",
+              },
+            },
+            responsive: true,
+            scales: {
+              y: {
+                border: { display: false },
+
+                grid: {
+                  display: false, // <-- this removes y-axis line
+                  lineWidth: function (context) {
+                    return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                  },
+                  color: "#2E294E",
+                  drawOnChartArea: false,
+                  tickColor: "#2E294E",
+                },
+                ticks: {
+                  padding: 2,
+                  font: { family: "inter", size: 10 },
+                  color: "white",
+                  display: true,
+                },
+              },
+              x: {
+                bounds: "ticks",
+                border: { display: false },
+
+                grid: {
+                  lineWidth: 0,
+                  tickColor: transFormArrayData().map((item, index) => {
+                    if (index % 4 === 0) {
+                      return "white";
+                    } else return "";
+                  }),
+                  // <-- this removes vertical lines between bars
+                },
+                ticks: {
+                  padding: 20,
+                  font: { family: "inter", size: 12 },
+                  color: transFormArrayData().map((item, index) => {
+                    return "white";
+                  }),
+                  autoSkip: true,
+                  maxTicksLimit: 10,
+                  labelOffset: 4,
+                  count: 4,
+                  callback: (t, i) => {
+                    return transFormArrayData()[i].timeLabel;
+                  },
+                },
+              },
+            },
+
+            plugins: {
+              title: {
+                display: false,
+                text: "Users Gained between 2016-2020",
+              },
+              legend: {
+                display: false,
+                labels: {
+                  font: {
+                    family: "var(--inter-font)",
+                  },
+                  color: "red",
+                },
+              },
+              tooltip: {
+                bodySpacing: 8,
+                enabled: true,
+              },
+            },
+
+            borderColor: "rgba(0,22, 222, 200)",
+            backgroundColor: "rgb(255 237 213)",
+
+            animation: { delay: 1, easing: "linear" },
+            maintainAspectRatio: false,
+          }}
+        />
+      </div>
+
+      <div className="w-fit h-fit hidden lg:block xl:hidden relative">
         <Line
           data={GraphData}
           style={{
@@ -298,33 +531,6 @@ export default function ChartView(props: ChartViewProps) {
       </div>
 
       <div className="  block lg:hidden w-full h-fit flex items-center justify-center relative">
-        <div
-          onClick={() => {
-            setClickedSetRange((prev) => !prev);
-          }}
-          className={`${
-            clickedSetRange ? "w-fit" : "w-10"
-          } h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter rounded-full -top-2 flex  items-center justify-center`}
-        >
-          {timeRanges.map((item) => {
-            if (item.name !== "1day") {
-              return (
-                <button
-                  key={item.name}
-                  className={`${
-                    clickedSetRange ? "" : "hidden"
-                  } w-10 h-10 border rounded-full border-t border-gray-600`}
-                >
-                  {item.name}
-                </button>
-              );
-            }
-          })}
-          <button className="border w-10 h-10 border border-gray-600 rounded-full">
-            {timeRanges[1].name}
-          </button>
-        </div>
-
         <Line
           data={GraphData}
           ref={chartRef}

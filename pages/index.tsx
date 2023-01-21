@@ -56,7 +56,7 @@ export default function Home() {
       .catch((err) => {
         console.log(err);
         setCoinSearchRes((prev: any) => {
-          return { ...prev, data: null, res: 500 };
+          return { ...prev, data: [], res: 500 };
         });
         if (!toast.isActive(toastId.current)) {
           toast.error("Search Error", {
@@ -83,13 +83,22 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-full h-full  bg-ultraBlack font-inter lg:p-8 xl:p-16">
+    <div className="w-full h-full  bg-ultraBlack font-inter lg:p-8 xl:p-16 lg:pt-4 xl:pt-4">
       <ToastContainer></ToastContainer>
       <div className="w-full h-fit flex flex-col items-center ">
-        <div className="text-base font-inter p-4 py-8 self-start text-white lg:text-5xl">
-          Welcome <div className="text-green-400">Adrien</div>
+        <div className="text-base font-inter p-4 lg:px-0   py-8 self-start text-white lg:text-5xl flex flex-col lg:flex-row lg:flex-row-reverse justify-between w-full ">
+          <div className="hidden lg:block">
+            <DashDisplay></DashDisplay>
+          </div>
+          <div className=" lg:p-4 lg:text-4xl xl:text-4xl">
+            {" "}
+            Welcome <div className="text-green-400 ">Adrien</div>
+          </div>
         </div>
-        <DashDisplay></DashDisplay>
+        <div className="lg:hidden w-full">
+          <DashDisplay></DashDisplay>
+        </div>
+
         {coinData.length === 0 ? (
           <BounceLoader color="#36d7b7"></BounceLoader>
         ) : (
