@@ -8,6 +8,7 @@ import {
   Filler,
   ScriptableContext,
 } from "chart.js";
+import { coinGeckoArr } from "../pages/index";
 import { Gradient } from "chartjs-plugin-gradient/types/options";
 import { BounceLoader } from "react-spinners";
 import gradient from "chartjs-plugin-gradient";
@@ -41,7 +42,7 @@ Chart.register(Filler);
 Chart.register(ArcElement);
 
 type ChartViewProps = {
-  dataArray: dataArray;
+  dataArray: coinGeckoArr;
   fetchCoinList: () => void;
   coinRes: {
     data: {
@@ -65,24 +66,16 @@ export default function ChartView(props: ChartViewProps) {
 
   const { height, width } = useMediaQuery();
   const isMobile = width ? width < 640 : false;
-  const transFormArrayData = () => {
-    const newData = props.dataArray.map((item, index) => {
-      const date = new Date(item.time_period_start);
-      const timeLabel = format(date, "MMM do hh:mm");
-      return { ...item, id: index, timeLabel };
-    });
-    return newData;
-  };
 
   const [GraphData, setGraphData] = useState({
-    labels: transFormArrayData().map((data, index) => {
-      return data.timeLabel;
+    labels: props.dataArray.map((coinData) => {
+      var s = new Date(coinData[0]).toLocaleTimeString("en-US");
+      return s;
     }),
     datasets: [
       {
-        data: transFormArrayData().map((item) => {
-          const sum = item.rate_high + item.rate_low;
-          return sum / 2;
+        data: props.dataArray.map((item) => {
+          return item[4];
         }),
         borderColor: "rgb(74, 222, 128)",
         backgroundColor: "rgb(255 237 213)",
@@ -175,9 +168,6 @@ export default function ChartView(props: ChartViewProps) {
       <div className="font-Unbounded mb-2 text-green-400 lg:text-3xl flex relative">
         Bitcoin
         <div
-          onClick={() => {
-            setClickedSetRange((prev) => !prev);
-          }}
           className={`${
             clickedSetRange ? "w-fit" : "w-10"
           } h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter lg:hidden rounded-full top-0 flex  items-center justify-center`}
@@ -196,7 +186,12 @@ export default function ChartView(props: ChartViewProps) {
               );
             }
           })}
-          <button className="border w-10 h-10 border border-gray-600 rounded-full">
+          <button
+            onClick={() => {
+              setClickedSetRange((prev) => !prev);
+            }}
+            className="border w-10 h-10 border border-gray-600 rounded-full"
+          >
             {timeRanges[1].name}
           </button>
         </div>
@@ -261,7 +256,7 @@ export default function ChartView(props: ChartViewProps) {
                   tickColor: "#2E294E",
                 },
                 ticks: {
-                  padding: 2,
+                  padding: 4,
                   font: { family: "inter", size: 10 },
                   color: "white",
                   display: true,
@@ -273,7 +268,7 @@ export default function ChartView(props: ChartViewProps) {
 
                 grid: {
                   lineWidth: 0,
-                  tickColor: transFormArrayData().map((item, index) => {
+                  tickColor: props.dataArray.map((item, index) => {
                     if (index % 4 === 0) {
                       return "white";
                     } else return "";
@@ -283,16 +278,13 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 20,
                   font: { family: "inter", size: 12 },
-                  color: transFormArrayData().map((item, index) => {
+                  color: props.dataArray.map((item, index) => {
                     return "white";
                   }),
                   autoSkip: true,
                   maxTicksLimit: 10,
                   labelOffset: 4,
                   count: 4,
-                  callback: (t, i) => {
-                    return transFormArrayData()[i].timeLabel;
-                  },
                 },
               },
             },
@@ -363,7 +355,7 @@ export default function ChartView(props: ChartViewProps) {
                   tickColor: "#2E294E",
                 },
                 ticks: {
-                  padding: 2,
+                  padding: 6,
                   font: { family: "inter", size: 10 },
                   color: "white",
                   display: true,
@@ -375,7 +367,7 @@ export default function ChartView(props: ChartViewProps) {
 
                 grid: {
                   lineWidth: 0,
-                  tickColor: transFormArrayData().map((item, index) => {
+                  tickColor: props.dataArray.map((item, index) => {
                     if (index % 4 === 0) {
                       return "white";
                     } else return "";
@@ -385,16 +377,13 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 20,
                   font: { family: "inter", size: 12 },
-                  color: transFormArrayData().map((item, index) => {
+                  color: props.dataArray.map((item, index) => {
                     return "white";
                   }),
                   autoSkip: true,
                   maxTicksLimit: 10,
                   labelOffset: 4,
                   count: 4,
-                  callback: (t, i) => {
-                    return transFormArrayData()[i].timeLabel;
-                  },
                 },
               },
             },
@@ -465,7 +454,7 @@ export default function ChartView(props: ChartViewProps) {
                   tickColor: "#2E294E",
                 },
                 ticks: {
-                  padding: 2,
+                  padding: 6,
                   font: { family: "inter", size: 10 },
                   color: "white",
                   display: true,
@@ -477,7 +466,7 @@ export default function ChartView(props: ChartViewProps) {
 
                 grid: {
                   lineWidth: 0,
-                  tickColor: transFormArrayData().map((item, index) => {
+                  tickColor: props.dataArray.map((item, index) => {
                     if (index % 4 === 0) {
                       return "white";
                     } else return "";
@@ -487,16 +476,13 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 20,
                   font: { family: "inter", size: 12 },
-                  color: transFormArrayData().map((item, index) => {
+                  color: props.dataArray.map((item, index) => {
                     return "white";
                   }),
                   autoSkip: true,
                   maxTicksLimit: 10,
                   labelOffset: 4,
                   count: 4,
-                  callback: (t, i) => {
-                    return transFormArrayData()[i].timeLabel;
-                  },
                 },
               },
             },
@@ -568,7 +554,7 @@ export default function ChartView(props: ChartViewProps) {
                   tickColor: "#2E294E",
                 },
                 ticks: {
-                  padding: 2,
+                  padding: 4,
                   font: { family: "inter", size: 7 },
                   color: "white",
                   display: true,
@@ -580,7 +566,7 @@ export default function ChartView(props: ChartViewProps) {
 
                 grid: {
                   lineWidth: 0,
-                  tickColor: transFormArrayData().map((item, index) => {
+                  tickColor: props.dataArray.map((item, index) => {
                     if (index % 4 === 0) {
                       return "white";
                     } else return "";
@@ -590,17 +576,14 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 10,
                   font: { family: "inter", size: 8 },
-                  color: transFormArrayData().map((item, index) => {
-                    return "#2E294E";
+                  color: props.dataArray.map((item, index) => {
+                    return "white";
                   }),
-                  display: false,
+                  display: true,
                   autoSkip: true,
                   maxTicksLimit: 10,
                   labelOffset: 4,
                   count: 4,
-                  callback: (t, i) => {
-                    return transFormArrayData()[i].timeLabel;
-                  },
                 },
               },
             },

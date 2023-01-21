@@ -16,7 +16,7 @@ export default function DebitCards() {
         onClick={() => {
           setClicked((prev) => !prev);
         }}
-        className="flip w-full h-48 "
+        className="flip w-full h-48 lg:w-80 "
       >
         <div
           className={`${

@@ -2,6 +2,7 @@ import { Inter } from "@next/font/google";
 import recentTrans from "../mockData/recentTrans";
 import ChartView from "../components/ChartView";
 import styles from "../styles/Home.module.css";
+import coinGeckoChartData from "../mockData/coinGeckoChartData";
 import { PropagateLoader, BounceLoader } from "react-spinners";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -26,22 +27,21 @@ export type dataArray = {
   rate_close: number;
 }[];
 
+export type coinGeckoArr = number[][];
+
 export default function Home() {
   const toastId: any = useRef(null);
   const customId = "custom-id-yes";
-  const [coinData, setCoinData] = useState([...chartData]);
+  const [coinData, setCoinData] = useState([...coinGeckoChartData]);
   const [coinSearchRes, setCoinSearchRes] = useState({ data: [], res: {} });
   const [searchName, setSearchName] = useState("");
+  const [timeFrame, setTimeFrame] = useState("1");
   const fecthData = async () => {
     await axios
       .get(
-        `https://rest.coinapi.io/v1/exchangerate/BTC/USD/history?period_id=1HRS&time_start=2016-01-01T00:00:00&time_end=2016-02-01T00:00:00`,
-        {
-          headers: { "X-CoinAPI-Key": process.env.NEXT_PUBLIC_coinApiKey },
-        }
+        `https://api.coingecko.com/api/v3/coins/bitcoin/ohlc?vs_currency=usd&days=180`
       )
       .then((data) => {
-        setCoinData(data.data);
         console.log(data.data);
       })
       .catch((err) => {
@@ -59,7 +59,7 @@ export default function Home() {
           return { ...prev, data: [], res: 500 };
         });
         if (!toast.isActive(toastId.current)) {
-          toast.error("Search Error", {
+          toast.error("Search Error, Please check your internet connection", {
             className: "text-xs",
             toastId: customId,
           });
@@ -121,5 +121,3 @@ export default function Home() {
     </div>
   );
 }
-
-/*   <BounceLoader  color="#36d7b7" /> */
