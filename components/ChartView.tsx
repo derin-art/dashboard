@@ -111,7 +111,7 @@ export default function ChartView(props: ChartViewProps) {
   const responseErr = props.coinRes.res === 500;
 
   return (
-    <div className="w-full h-fit lg:p-0 p-2 relative">
+    <div className="w-full h-fit lg:p-0 p-2 relative ">
       <div
         className={`w-full ${
           props.searchName ? "h-48" : "h-10"
@@ -136,7 +136,7 @@ export default function ChartView(props: ChartViewProps) {
             props.searchName ? "flex" : "hidden"
           } flex-col mt-4 p-2`}
         >
-          {props.coinRes.data ? (
+          {props.coinRes.data[0] ? (
             props.coinRes.data.filter((coin) => {
               if (
                 coin.name.toLowerCase().includes(props.searchName.toLowerCase())
@@ -145,20 +145,14 @@ export default function ChartView(props: ChartViewProps) {
               }
             }).length > 0 ? (
               props.coinRes.data.map((coin) => {
-                if (
-                  coin.name
-                    .toLowerCase()
-                    .includes(props.searchName.toLowerCase())
-                ) {
-                  return (
-                    <button
-                      className="p-2 mb-2 border border-gray-600"
-                      key={coin.id}
-                    >
-                      {coin.name}
-                    </button>
-                  );
-                }
+                return (
+                  <button
+                    className="p-2 mb-2 border border-gray-600"
+                    key={coin.id}
+                  >
+                    {coin.name}
+                  </button>
+                );
               })
             ) : (
               <div className="w-full h-full items-center justify-center text-white flex">
@@ -172,17 +166,42 @@ export default function ChartView(props: ChartViewProps) {
           )}
         </div>
       </div>
-      <div className="font-Unbounded mb-2 text-green-400">Bitcoin</div>
-      <div className="w-fit h-fit hidden lg:block">
-        <div className="h-10 w-10 border-gray-600 border absolute right-2 text-[10px] text-white font-inter rounded-full top-14 flex items-center justify-center">
-          1wk
+      <div className="font-Unbounded mb-2 text-green-400 lg:text-3xl flex relative">
+        Bitcoin
+        <div
+          onClick={() => {
+            setClickedSetRange((prev) => !prev);
+          }}
+          className={`${
+            clickedSetRange ? "w-fit" : "w-10"
+          } h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter rounded-full top-0 flex  items-center justify-center`}
+        >
+          {timeRanges.map((item) => {
+            if (item.name !== "1day") {
+              return (
+                <button
+                  key={item.name}
+                  className={`${
+                    clickedSetRange ? "" : "hidden"
+                  } w-10 h-10 border rounded-full border-t border-gray-600`}
+                >
+                  {item.name}
+                </button>
+              );
+            }
+          })}
+          <button className="border w-10 h-10 border border-gray-600 rounded-full">
+            {timeRanges[1].name}
+          </button>
         </div>
+      </div>
+      <div className="w-fit h-fit hidden lg:block relative">
         <Line
           data={GraphData}
           style={{
             width: !isMobile ? 750 : 350,
             height: !isMobile ? 500 : 230,
-            border: "1px #242424 solid",
+            border: "0px #242424 solid",
             borderRadius: "10px",
             color: "#242424",
             padding: "30px",
@@ -191,10 +210,10 @@ export default function ChartView(props: ChartViewProps) {
             layout: {},
             elements: {
               point: {
-                radius: 3,
+                radius: 1.5,
 
                 pointStyle: "circle",
-                backgroundColor: "#fafafa",
+                backgroundColor: "#242424",
                 borderColor: "#242424",
               },
             },
@@ -204,19 +223,19 @@ export default function ChartView(props: ChartViewProps) {
                 border: { display: false },
 
                 grid: {
-                  display: true, // <-- this removes y-axis line
+                  display: false, // <-- this removes y-axis line
                   lineWidth: function (context) {
                     return context?.index === 0 ? 0 : 1; // <-- this removes the base line
                   },
-                  color: "#fafafa",
+                  color: "#2E294E",
                   drawOnChartArea: false,
-                  tickColor: "#fafafa",
+                  tickColor: "#2E294E",
                 },
                 ticks: {
-                  padding: 0,
-                  font: { family: "var(--inter-font)", size: 20 },
-                  color: "#f9fafb",
-                  display: false,
+                  padding: 2,
+                  font: { family: "inter", size: 10 },
+                  color: "white",
+                  display: true,
                 },
               },
               x: {

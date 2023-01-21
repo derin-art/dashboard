@@ -11,7 +11,9 @@ export default function RecentTrans(props: RecentTransProps) {
   return (
     <div>
       <div className="flex flex-col space-y-4 w-full  p-4">
-        <div className="text-gray-600 font-Unbounded">Recent Transactions</div>
+        <div className="text-gray-600 font-Unbounded lg:text-3xl">
+          Recent Transactions
+        </div>
         {props.data.map((item, index) => {
           return (
             <div

@@ -83,10 +83,10 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-full h-full  bg-ultraBlack font-inter ">
+    <div className="w-full h-full  bg-ultraBlack font-inter lg:p-8 xl:p-16">
       <ToastContainer></ToastContainer>
       <div className="w-full h-fit flex flex-col items-center ">
-        <div className="text-base font-inter p-4 py-8 self-start text-white">
+        <div className="text-base font-inter p-4 py-8 self-start text-white lg:text-5xl">
           Welcome <div className="text-green-400">Adrien</div>
         </div>
         <DashDisplay></DashDisplay>
