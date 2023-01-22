@@ -33,9 +33,20 @@ export default function Home() {
   const toastId: any = useRef(null);
   const customId = "custom-id-yes";
   const [coinData, setCoinData] = useState([...coinGeckoChartData]);
+  const [clickedSetRange, setClickedSetRange] = useState(false);
+  const [searchTextMain, setSearchTextMain] = useState("");
   const [coinSearchRes, setCoinSearchRes] = useState({ data: [], res: {} });
   const [searchName, setSearchName] = useState("");
   const [timeFrame, setTimeFrame] = useState("1");
+  const [coinId, setCoinId] = useState("bitcoin");
+
+  console.log(timeFrame, "ss");
+
+  const timeFrameFunc = (val: string) => {
+    console.log(val, "clicked");
+    setTimeFrame(val);
+  };
+
   const fecthData = async () => {
     await axios
       .get(
@@ -77,11 +88,6 @@ export default function Home() {
       });
   };
 
-  useEffect(() => {
-    return;
-    fecthData();
-  }, []);
-
   return (
     <div className="w-full h-full  bg-ultraBlack font-inter lg:p-8 xl:p-16 lg:pt-4 xl:pt-4">
       <ToastContainer></ToastContainer>
@@ -103,11 +109,18 @@ export default function Home() {
           <BounceLoader color="#36d7b7"></BounceLoader>
         ) : (
           <ChartView
+            clickedSetRange={clickedSetRange}
+            setClickedSetRange={setClickedSetRange}
+            key="ChartView"
+            timeFrameFunc={timeFrameFunc}
+            timeFrame={timeFrame}
             coinRes={coinSearchRes}
             fetchCoinList={fetchCoin}
             searchName={searchName}
             setSearchName={setSearchName}
             dataArray={coinData}
+            setCoinId={setCoinId}
+            setTimeFrame={setTimeFrame}
           ></ChartView>
         )}
         <div className="w-full">

@@ -8,6 +8,7 @@ import {
   Filler,
   ScriptableContext,
 } from "chart.js";
+
 import { coinGeckoArr } from "../pages/index";
 import { Gradient } from "chartjs-plugin-gradient/types/options";
 import { BounceLoader } from "react-spinners";
@@ -17,7 +18,7 @@ import CoinIcon from "../public/icon/CoinIcon";
 import useMediaQuery from "../hooks/useMediaQuery";
 import { Doughnut, Line, ChartProps } from "react-chartjs-2";
 import { format } from "date-fns";
-import { useEffect, useRef } from "react";
+import { Dispatch, useEffect, useRef } from "react";
 import {
   CategoryScale,
   Chart,
@@ -54,15 +55,18 @@ type ChartViewProps = {
   };
   searchName: string;
   setSearchName: any;
+  setCoinId: any;
+  setTimeFrame: any;
+  timeFrame: string;
+  timeFrameFunc: (val: string) => void;
+  clickedSetRange: boolean;
+  setClickedSetRange: any;
 };
 
 export default function ChartView(props: ChartViewProps) {
   const chartRef = useRef(null);
   let chart: any = null;
-
-  useEffect(() => {
-    chart = chartRef.current;
-  }, []);
+  chart = chartRef.current;
 
   const { height, width } = useMediaQuery();
   const isMobile = width ? width < 640 : false;
@@ -89,16 +93,12 @@ export default function ChartView(props: ChartViewProps) {
     ],
   });
 
-  const [clickedSetRange, setClickedSetRange] = useState(false);
-
-  const [searchText, setSearchText] = useState("");
-
   const timeRanges = [
-    { name: "1wk" },
-    { name: "1day" },
-    { name: "1mth" },
-    { name: "1yr" },
-    { name: "6mth" },
+    { name: "1wk", val: "7" },
+    { name: "1day", val: "1" },
+    { name: "1mth", val: "30" },
+    { name: "6mth", val: "180" },
+    { name: "1yr", val: "365" },
   ];
 
   const responseErr = props.coinRes.res === 500;
@@ -165,21 +165,30 @@ export default function ChartView(props: ChartViewProps) {
           )}
         </div>
       </div>
+
       <div className="font-Unbounded mb-2 text-green-400 lg:text-3xl flex relative">
         Bitcoin
         <div
           className={`${
-            clickedSetRange ? "w-fit" : "w-10"
-          } h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter lg:hidden rounded-full top-0 flex  items-center justify-center`}
+            props.clickedSetRange ? "w-fit" : "w-10"
+          } h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter lg:hidden rounded-full top-0 flex items-center justify-center`}
         >
-          {timeRanges.map((item) => {
-            if (item.name !== "1day") {
+          {timeRanges.map((item, index) => {
+            if (item.val !== props.timeFrame) {
               return (
                 <button
-                  key={item.name}
+                  key={index}
+                  onClick={() => {
+                    props.timeFrameFunc(item.val);
+                    props.setClickedSetRange((prev: any) => !prev);
+                  }}
                   className={`${
-                    clickedSetRange ? "" : "hidden"
-                  } w-10 h-10 border rounded-full border-t border-gray-600`}
+                    props.clickedSetRange ? "" : "hidden"
+                  } w-10 h-10 border duration-300 rounded-full ${
+                    props.timeFrame === item.val
+                      ? "border-green-400"
+                      : "border-gray-600"
+                  }`}
                 >
                   {item.name}
                 </button>
@@ -188,21 +197,26 @@ export default function ChartView(props: ChartViewProps) {
           })}
           <button
             onClick={() => {
-              setClickedSetRange((prev) => !prev);
+              props.setClickedSetRange((prev: any) => !prev);
             }}
-            className="border w-10 h-10 border border-gray-600 rounded-full"
+            className={`border w-10 h-10 duration-300 border border-green-400 rounded-full`}
           >
-            {timeRanges[1].name}
+            {timeRanges.map((item) => {
+              if (item.val === props.timeFrame) {
+                return (
+                  <div className="" key={item.name}>
+                    {item.name}
+                  </div>
+                );
+              }
+            })}
           </button>
         </div>
         <div
-          onClick={() => {
-            setClickedSetRange((prev) => !prev);
-          }}
           className={`w-fit hidden h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter rounded-full top-0 lg:flex  items-center justify-center`}
         >
           {timeRanges.map((item) => {
-            if (item.name !== "1day") {
+            if (item.val !== "1day") {
               return (
                 <button
                   key={item.name}
@@ -218,13 +232,12 @@ export default function ChartView(props: ChartViewProps) {
           </button>
         </div>
       </div>
-
       <div className="w-fit h-fit hidden 2xl:block relative">
         <Line
           data={GraphData}
           style={{
-            width: !isMobile ? 1350 : 350,
-            height: !isMobile ? 550 : 230,
+            width: 1350,
+            height: 550,
             border: "0px #242424 solid",
             borderRadius: "10px",
             color: "#242424",
@@ -317,13 +330,12 @@ export default function ChartView(props: ChartViewProps) {
           }}
         />
       </div>
-
       <div className="w-fit h-fit hidden xl:block 2xl:hidden relative">
         <Line
           data={GraphData}
           style={{
-            width: !isMobile ? 1050 : 350,
-            height: !isMobile ? 600 : 230,
+            width: 1050,
+            height: 600,
             border: "0px #242424 solid",
             borderRadius: "10px",
             color: "#242424",
@@ -416,13 +428,12 @@ export default function ChartView(props: ChartViewProps) {
           }}
         />
       </div>
-
       <div className="w-fit h-fit hidden lg:block xl:hidden relative">
         <Line
           data={GraphData}
           style={{
-            width: !isMobile ? 750 : 350,
-            height: !isMobile ? 500 : 230,
+            width: 750,
+            height: 500,
             border: "0px #242424 solid",
             borderRadius: "10px",
             color: "#242424",
@@ -515,7 +526,6 @@ export default function ChartView(props: ChartViewProps) {
           }}
         />
       </div>
-
       <div className="  block lg:hidden w-full h-fit flex items-center justify-center relative">
         <Line
           data={GraphData}

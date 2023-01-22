@@ -1,4 +1,5 @@
 import SwipeableViews from "react-swipeable-views";
+import { memo } from "react";
 import { useState } from "react";
 
 const wallets = [
@@ -7,7 +8,7 @@ const wallets = [
   { name: "Pound Wallet", val: "£450", icon: "£" },
 ];
 
-export default function DashDisplay() {
+function DashDisplay() {
   const [galleryIndex, setGalleryIndex] = useState(0);
   return (
     <div className="w-full text-base p-4 lg:w-[430px] xl:w-[500px]">
@@ -53,3 +54,5 @@ export default function DashDisplay() {
     </div>
   );
 }
+
+export default memo(DashDisplay);
