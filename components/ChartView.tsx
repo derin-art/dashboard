@@ -12,6 +12,7 @@ import {
 import { coinGeckoArr } from "../pages/index";
 import { Gradient } from "chartjs-plugin-gradient/types/options";
 import { BounceLoader } from "react-spinners";
+import { AnimatePresence, motion } from "framer-motion";
 import gradient from "chartjs-plugin-gradient";
 import BitcoinIcon from "../public/icon/BitcoinIcon";
 import CoinIcon from "../public/icon/CoinIcon";
@@ -56,11 +57,14 @@ type ChartViewProps = {
   searchName: string;
   setSearchName: any;
   setCoinId: any;
+  coinId: string;
   setTimeFrame: any;
   timeFrame: string;
   timeFrameFunc: (val: string) => void;
   clickedSetRange: boolean;
   setClickedSetRange: any;
+  fecthDataonDateSelect: (time: string) => void;
+  fecthDataonCoinSelect: (id: string) => void;
 };
 
 export default function ChartView(props: ChartViewProps) {
@@ -73,7 +77,10 @@ export default function ChartView(props: ChartViewProps) {
 
   const [GraphData, setGraphData] = useState({
     labels: props.dataArray.map((coinData) => {
-      var s = new Date(coinData[0]).toLocaleTimeString("en-US");
+      var s =
+        props.timeFrame === "1"
+          ? new Date(coinData[0]).toLocaleTimeString("en-US")
+          : new Date(coinData[0]).toLocaleDateString("en-US");
       return s;
     }),
     datasets: [
@@ -145,6 +152,10 @@ export default function ChartView(props: ChartViewProps) {
                 ) {
                   return (
                     <button
+                      onClick={() => {
+                        props.setCoinId(coin.id);
+                        props.fecthDataonCoinSelect(coin.id);
+                      }}
                       className="p-2 mb-2 border border-gray-600"
                       key={coin.id}
                     >
@@ -167,7 +178,7 @@ export default function ChartView(props: ChartViewProps) {
       </div>
 
       <div className="font-Unbounded mb-2 text-green-400 lg:text-3xl flex relative">
-        Bitcoin
+        {props.coinId}
         <div
           className={`${
             props.clickedSetRange ? "w-fit" : "w-10"
@@ -181,6 +192,7 @@ export default function ChartView(props: ChartViewProps) {
                   onClick={() => {
                     props.timeFrameFunc(item.val);
                     props.setClickedSetRange((prev: any) => !prev);
+                    props.fecthDataonDateSelect(item.val);
                   }}
                   className={`${
                     props.clickedSetRange ? "" : "hidden"

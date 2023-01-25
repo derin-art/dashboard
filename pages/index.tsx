@@ -31,8 +31,12 @@ export type coinGeckoArr = number[][];
 
 export default function Home() {
   const toastId: any = useRef(null);
+
   const customId = "custom-id-yes";
-  const [coinData, setCoinData] = useState([...coinGeckoChartData]);
+  const [coinData, setCoinData] = useState({
+    data: [...coinGeckoChartData],
+    res: {},
+  });
   const [clickedSetRange, setClickedSetRange] = useState(false);
   const [searchTextMain, setSearchTextMain] = useState("");
   const [coinSearchRes, setCoinSearchRes] = useState({ data: [], res: {} });
@@ -40,12 +44,12 @@ export default function Home() {
   const [timeFrame, setTimeFrame] = useState("1");
   const [coinId, setCoinId] = useState("bitcoin");
 
-  console.log(timeFrame, "ss");
-
   const timeFrameFunc = (val: string) => {
     console.log(val, "clicked");
     setTimeFrame(val);
   };
+
+  console.log("main", coinData);
 
   const fecthData = async () => {
     await axios
@@ -57,6 +61,57 @@ export default function Home() {
       })
       .catch((err) => {
         console.log(err);
+        return;
+      });
+  };
+
+  const fecthDataonCoinSelect = async (id: string = coinId) => {
+    setCoinData((prev) => ({ ...prev, data: [] }));
+    await axios
+      .get(
+        `https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=${timeFrame}`
+      )
+      .then((data) => {
+        console.log(data.data);
+        if (data) {
+          setCoinData((prev) => ({ ...prev, data: data.data }));
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        if (!toast.isActive(toastId.current)) {
+          toast.error("Search Error, Please check your internet connection", {
+            className: "text-xs",
+            toastId: customId,
+          });
+        }
+        return;
+      });
+  };
+
+  const fecthDataonDateSelect = async (time: string = timeFrame) => {
+    setCoinData((prev) => ({ ...prev, data: [] }));
+    await axios
+      .get(
+        `https://api.coingecko.com/api/v3/coins/${coinId}/ohlc?vs_currency=usd&days=${time}`
+      )
+      .then((data) => {
+        console.log("red", data);
+        console.log(data.data);
+        if (data) {
+          setCoinData((prev) => ({ ...prev, data: data.data }));
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        if (!toast.isActive(toastId.current)) {
+          toast.error("Search Error, Please check your internet connection", {
+            className: "text-xs",
+            toastId: customId,
+            theme: "dark",
+          });
+        }
+
         return;
       });
   };
@@ -105,20 +160,23 @@ export default function Home() {
           <DashDisplay></DashDisplay>
         </div>
 
-        {coinData.length === 0 ? (
-          <BounceLoader color="#36d7b7"></BounceLoader>
+        {coinData.data.length === 0 ? (
+          <BounceLoader color="#4ade80"></BounceLoader>
         ) : (
           <ChartView
             clickedSetRange={clickedSetRange}
             setClickedSetRange={setClickedSetRange}
             key="ChartView"
+            coinId={coinId}
+            fecthDataonCoinSelect={fecthDataonCoinSelect}
+            fecthDataonDateSelect={fecthDataonDateSelect}
             timeFrameFunc={timeFrameFunc}
             timeFrame={timeFrame}
             coinRes={coinSearchRes}
             fetchCoinList={fetchCoin}
             searchName={searchName}
             setSearchName={setSearchName}
-            dataArray={coinData}
+            dataArray={coinData.data}
             setCoinId={setCoinId}
             setTimeFrame={setTimeFrame}
           ></ChartView>

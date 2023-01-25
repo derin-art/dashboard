@@ -1,6 +1,7 @@
 import SwipeableViews from "react-swipeable-views";
 import { memo } from "react";
 import { useState } from "react";
+import { useAppSelector, useAppDispatch } from "../hooks/useDispatch";
 
 const wallets = [
   { name: "Dollar Wallet", val: "$2100", icon: "$" },
@@ -9,7 +10,11 @@ const wallets = [
 ];
 
 function DashDisplay() {
+  const NightState = useAppSelector((state) => {
+    return state.night.value.isNight;
+  });
   const [galleryIndex, setGalleryIndex] = useState(0);
+  console.log("sdsd", NightState);
   return (
     <div className="w-full text-base p-4 lg:w-[430px] xl:w-[500px]">
       <div className=" border border-gray-600 rounded-3xl relative carbonBg text-white  rounded p-4 h-48 lg:h-56 xl:h-60 h-full w-full font-Unbounded">
