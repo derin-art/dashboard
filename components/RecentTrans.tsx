@@ -7,7 +7,10 @@ type RecentTransProps = {
   }[];
 };
 
+import { useAppSelector } from "../hooks/useDispatch";
+
 export default function RecentTrans(props: RecentTransProps) {
+  const NightState = useAppSelector((state) => state.night.value.isNight);
   return (
     <div>
       <div className="flex flex-col space-y-4 w-full  p-4">
@@ -21,7 +24,11 @@ export default function RecentTrans(props: RecentTransProps) {
               key={index}
             >
               <div>
-                <div className="font-Unbounded text-white">
+                <div
+                  className={`duration-300 font-Unbounded ${
+                    NightState ? "text-white" : "text-ultraGray"
+                  }`}
+                >
                   {item.amount} {item.coin}
                 </div>
                 <div className="text-xs text-green-400">{item.date}</div>

@@ -4,7 +4,9 @@ import ChartView from "../components/ChartView";
 import styles from "../styles/Home.module.css";
 import coinGeckoChartData from "../mockData/coinGeckoChartData";
 import { PropagateLoader, BounceLoader } from "react-spinners";
+import { change, setGraphData, setResponse } from "../features/nigthLifeSlice";
 import axios from "axios";
+import { useAppSelector, useAppDispatch } from "../hooks/useDispatch";
 import { ToastContainer, toast } from "react-toastify";
 import RecentTrans from "../components/RecentTrans";
 import DashDisplay from "../components/DashDisplay";
@@ -36,10 +38,14 @@ export default function Home() {
   const [coinData, setCoinData] = useState({
     data: [...coinGeckoChartData],
     res: {},
+    prevData: [...coinGeckoChartData],
   });
   const [clickedSetRange, setClickedSetRange] = useState(false);
   const [searchTextMain, setSearchTextMain] = useState("");
-  const [coinSearchRes, setCoinSearchRes] = useState({ data: [], res: {} });
+  const [coinSearchRes, setCoinSearchRes] = useState({
+    data: [],
+    res: {},
+  });
   const [searchName, setSearchName] = useState("");
   const [timeFrame, setTimeFrame] = useState("1");
   const [coinId, setCoinId] = useState("bitcoin");
@@ -50,6 +56,8 @@ export default function Home() {
   };
 
   console.log("main", coinData);
+
+  const dispatch = useAppDispatch();
 
   const fecthData = async () => {
     await axios
@@ -74,6 +82,8 @@ export default function Home() {
       .then((data) => {
         console.log(data.data);
         if (data) {
+          dispatch(setGraphData(data.data));
+          dispatch(setResponse(data.status));
           setCoinData((prev) => ({ ...prev, data: data.data }));
         }
       })
@@ -99,6 +109,8 @@ export default function Home() {
         console.log("red", data);
         console.log(data.data);
         if (data) {
+          dispatch(setGraphData(data.data));
+          dispatch(setResponse(data.status));
           setCoinData((prev) => ({ ...prev, data: data.data }));
         }
       })
@@ -143,11 +155,21 @@ export default function Home() {
       });
   };
 
+  const NightState = useAppSelector((state) => state.night.value.isNight);
+
   return (
-    <div className="w-full h-full  bg-ultraBlack font-inter lg:p-8 xl:p-16 lg:pt-4 xl:pt-4">
+    <div
+      className={`w-full h-full  ${
+        NightState ? "bg-ultraBlack" : "bg-white"
+      } duration-300 font-inter lg:p-8 xl:p-16 lg:pt-4 xl:pt-4`}
+    >
       <ToastContainer></ToastContainer>
       <div className="w-full h-fit flex flex-col items-center ">
-        <div className="text-base font-inter p-4 lg:px-0   py-8 self-start text-white lg:text-5xl flex flex-col lg:flex-row lg:flex-row-reverse justify-between w-full ">
+        <div
+          className={`duration-300 text-base font-inter p-4 lg:px-0   py-8 self-start ${
+            NightState ? "text-white" : "text-ultraGray"
+          } lg:text-5xl flex flex-col lg:flex-row lg:flex-row-reverse justify-between w-full `}
+        >
           <div className="hidden lg:block">
             <DashDisplay></DashDisplay>
           </div>

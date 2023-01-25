@@ -10,6 +10,7 @@ import {
 } from "chart.js";
 
 import { coinGeckoArr } from "../pages/index";
+import { useAppSelector } from "../hooks/useDispatch";
 import { Gradient } from "chartjs-plugin-gradient/types/options";
 import { BounceLoader } from "react-spinners";
 import { AnimatePresence, motion } from "framer-motion";
@@ -68,12 +69,45 @@ type ChartViewProps = {
 };
 
 export default function ChartView(props: ChartViewProps) {
+  const NigthState = useAppSelector((state) => state.night.value.isNight);
+  const chartXTicksColor = NigthState ? "white" : "black";
+  const backgroundColor = NigthState
+    ? "rgba(189, 211, 197, 0.1)"
+    : "rgba(189, 211, 197, 0.6)";
   const chartRef = useRef(null);
   let chart: any = null;
   chart = chartRef.current;
 
   const { height, width } = useMediaQuery();
   const isMobile = width ? width < 640 : false;
+
+  const graphArray = useAppSelector((state) => state.night.value.coinData);
+
+  const graphDetails = {
+    labels: graphArray.map((coinData) => {
+      var s =
+        props.timeFrame === "1"
+          ? new Date(coinData[0]).toLocaleTimeString("en-US")
+          : new Date(coinData[0]).toLocaleDateString("en-US");
+      return s;
+    }),
+    datasets: [
+      {
+        data: graphArray.map((item) => {
+          return item[4];
+        }),
+        borderColor: "rgb(74, 222, 128)",
+        backgroundColor: NigthState
+          ? "rgba(189, 211, 197, 0.1)"
+          : "rgba(189, 211, 197, 0.3)",
+        borderWidth: 1,
+        fill: {
+          target: "origin", // 3. Set the fill options
+        },
+        tension: 0.3,
+      },
+    ],
+  };
 
   const [GraphData, setGraphData] = useState({
     labels: props.dataArray.map((coinData) => {
@@ -89,11 +123,12 @@ export default function ChartView(props: ChartViewProps) {
           return item[4];
         }),
         borderColor: "rgb(74, 222, 128)",
-        backgroundColor: "rgb(255 237 213)",
+        backgroundColor: NigthState
+          ? "rgba(189, 211, 197, 0.1)"
+          : "rgba(189, 211, 197, 0.1)",
         borderWidth: 1,
         fill: {
           target: "origin", // 3. Set the fill options
-          above: "rgba(189, 211, 197, 0.1)",
         },
         tension: 0.3,
       },
@@ -182,7 +217,11 @@ export default function ChartView(props: ChartViewProps) {
         <div
           className={`${
             props.clickedSetRange ? "w-fit" : "w-10"
-          } h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter lg:hidden rounded-full top-0 flex items-center justify-center`}
+          } h-10 duration-300 ${
+            NigthState ? "border-gray-600" : "border-gray-300"
+          } border absolute right-0 text-[9px] ${
+            NigthState ? "text-white" : "text-ultraGray"
+          } font-inter lg:hidden rounded-full top-0 flex items-center justify-center`}
         >
           {timeRanges.map((item, index) => {
             if (item.val !== props.timeFrame) {
@@ -197,9 +236,13 @@ export default function ChartView(props: ChartViewProps) {
                   className={`${
                     props.clickedSetRange ? "" : "hidden"
                   } w-10 h-10 border duration-300 rounded-full ${
-                    props.timeFrame === item.val
+                    NigthState
+                      ? props.timeFrame === item.val
+                        ? "border-green-400"
+                        : "border-gray-600"
+                      : props.timeFrame === item.val
                       ? "border-green-400"
-                      : "border-gray-600"
+                      : "border-gray-400"
                   }`}
                 >
                   {item.name}
@@ -225,21 +268,31 @@ export default function ChartView(props: ChartViewProps) {
           </button>
         </div>
         <div
-          className={`w-fit hidden h-10 duration-300 border-gray-600 border absolute right-0 text-[9px] text-white font-inter rounded-full top-0 lg:flex  items-center justify-center`}
+          className={`w-fit hidden h-10 duration-300 ${
+            NigthState ? "border-gray-600" : "border-gray-400"
+          } border absolute right-0 text-[9px] ${
+            NigthState ? "text-white" : "text-ultraGray"
+          } font-inter rounded-full top-0 lg:flex  items-center justify-center`}
         >
           {timeRanges.map((item) => {
             if (item.val !== "1day") {
               return (
                 <button
                   key={item.name}
-                  className={` w-10 h-10 border rounded-full border-t border-gray-600`}
+                  className={` w-10 h-10 border rounded-full border-t ${
+                    NigthState ? "border-gray-600" : "border-gray-400"
+                  }`}
                 >
                   {item.name}
                 </button>
               );
             }
           })}
-          <button className="border w-10 h-10 border border-gray-600 rounded-full">
+          <button
+            className={`border w-10 h-10 ${
+              NigthState ? "border-gray-600" : "border-gray-400"
+            } rounded-full`}
+          >
             {timeRanges[1].name}
           </button>
         </div>
@@ -283,7 +336,7 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 4,
                   font: { family: "inter", size: 10 },
-                  color: "white",
+                  color: chartXTicksColor,
                   display: true,
                 },
               },
@@ -303,9 +356,7 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 20,
                   font: { family: "inter", size: 12 },
-                  color: props.dataArray.map((item, index) => {
-                    return "white";
-                  }),
+                  color: chartXTicksColor,
                   autoSkip: true,
                   maxTicksLimit: 10,
                   labelOffset: 4,
@@ -381,7 +432,7 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 6,
                   font: { family: "inter", size: 10 },
-                  color: "white",
+                  color: chartXTicksColor,
                   display: true,
                 },
               },
@@ -401,9 +452,7 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 20,
                   font: { family: "inter", size: 12 },
-                  color: props.dataArray.map((item, index) => {
-                    return "white";
-                  }),
+                  color: chartXTicksColor,
                   autoSkip: true,
                   maxTicksLimit: 10,
                   labelOffset: 4,
@@ -479,7 +528,7 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 6,
                   font: { family: "inter", size: 10 },
-                  color: "white",
+                  color: chartXTicksColor,
                   display: true,
                 },
               },
@@ -499,9 +548,7 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 20,
                   font: { family: "inter", size: 12 },
-                  color: props.dataArray.map((item, index) => {
-                    return "white";
-                  }),
+                  color: chartXTicksColor,
                   autoSkip: true,
                   maxTicksLimit: 10,
                   labelOffset: 4,
@@ -540,7 +587,7 @@ export default function ChartView(props: ChartViewProps) {
       </div>
       <div className="  block lg:hidden w-full h-fit flex items-center justify-center relative">
         <Line
-          data={GraphData}
+          data={graphDetails}
           ref={chartRef}
           style={{
             border: "0px #FFEFEB solid",
@@ -578,7 +625,7 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 4,
                   font: { family: "inter", size: 7 },
-                  color: "white",
+                  color: chartXTicksColor,
                   display: true,
                 },
               },
@@ -598,9 +645,7 @@ export default function ChartView(props: ChartViewProps) {
                 ticks: {
                   padding: 10,
                   font: { family: "inter", size: 8 },
-                  color: props.dataArray.map((item, index) => {
-                    return "white";
-                  }),
+                  color: chartXTicksColor,
                   display: true,
                   autoSkip: true,
                   maxTicksLimit: 10,
