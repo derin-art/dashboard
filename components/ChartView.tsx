@@ -150,12 +150,14 @@ export default function ChartView(props: ChartViewProps) {
       <div
         className={`w-full ${
           props.searchName ? "h-48" : "h-10"
-        } duration-300 border border-gray-600 mb-4 p-1 rounded-lg flex  flex-col`}
+        } duration-300 border ${
+          NigthState ? " border-gray-600" : "border-gray-400 bg-gray-100"
+        } mb-4 p-1 rounded-lg flex  flex-col`}
       >
-        <div className="flex items-center w-full h-fit  mt-[2px]">
-          <button className="h-full rounded-full w-10 flex items-center justify-center ">
+        <div className="flex items-center w-full h-fit  mt-[2px] ">
+          <div className="h-full rounded-full w-10 flex items-center justify-center ">
             {CoinIcon("fill-green-400")}
-          </button>
+          </div>
           <input
             onChange={(e) => {
               props.setSearchName(e.target.value);
@@ -167,9 +169,9 @@ export default function ChartView(props: ChartViewProps) {
           ></input>
         </div>
         <div
-          className={`h-full overflow-auto text-white text-xs ${
-            props.searchName ? "flex" : "hidden"
-          } flex-col mt-4 p-2`}
+          className={`h-full overflow-auto ${
+            NigthState ? "text-white" : "text-gray-600"
+          } text-xs ${props.searchName ? "flex" : "hidden"} flex-col mt-4 p-2`}
         >
           {props.coinRes.data[0] ? (
             props.coinRes.data.filter((coin) => {
@@ -219,7 +221,7 @@ export default function ChartView(props: ChartViewProps) {
             props.clickedSetRange ? "w-fit" : "w-10"
           } h-10 duration-300 ${
             NigthState ? "border-gray-600" : "border-gray-300"
-          } border absolute right-0 text-[9px] ${
+          } border-y absolute right-0 text-[9px] ${
             NigthState ? "text-white" : "text-ultraGray"
           } font-inter lg:hidden rounded-full top-0 flex items-center justify-center`}
         >
@@ -270,31 +272,28 @@ export default function ChartView(props: ChartViewProps) {
         <div
           className={`w-fit hidden h-10 duration-300 ${
             NigthState ? "border-gray-600" : "border-gray-400"
-          } border absolute right-0 text-[9px] ${
+          } border-y absolute right-0 text-[9px] ${
             NigthState ? "text-white" : "text-ultraGray"
           } font-inter rounded-full top-0 lg:flex  items-center justify-center`}
         >
           {timeRanges.map((item) => {
-            if (item.val !== "1day") {
-              return (
-                <button
-                  key={item.name}
-                  className={` w-10 h-10 border rounded-full border-t ${
-                    NigthState ? "border-gray-600" : "border-gray-400"
-                  }`}
-                >
-                  {item.name}
-                </button>
-              );
-            }
+            return (
+              <button
+                key={item.name}
+                className={` w-10 h-10 ${
+                  NigthState
+                    ? item.val === props.timeFrame
+                      ? "bg-green-400 text-white border-gray-600"
+                      : "border-gray-600"
+                    : item.val === props.timeFrame
+                    ? "border-gray-400 bg-green-400 text-white"
+                    : "border-gray-400"
+                } border rounded-full `}
+              >
+                {item.name}
+              </button>
+            );
           })}
-          <button
-            className={`border w-10 h-10 ${
-              NigthState ? "border-gray-600" : "border-gray-400"
-            } rounded-full`}
-          >
-            {timeRanges[1].name}
-          </button>
         </div>
       </div>
       <div className="w-fit h-fit hidden 2xl:block relative">

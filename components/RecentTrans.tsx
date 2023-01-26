@@ -20,7 +20,9 @@ export default function RecentTrans(props: RecentTransProps) {
         {props.data.map((item, index) => {
           return (
             <div
-              className="flex border p-2 relative border-gray-600"
+              className={`flex border rounded p-2 duration-300 relative  ${
+                NightState ? "border-gray-600" : "bg-gray-100"
+              }`}
               key={index}
             >
               <div>

@@ -89,6 +89,27 @@
   background-color: rgba(255, 71, 71, 0);
 }
 
+.radialPatternLight {
+  background: repeating-radial-gradient(
+      circle,
+      transparent,
+      transparent 11.2px,
+      #eeeeee 11.2px,
+      #eeeeee 14.4px
+    ),
+    repeating-radial-gradient(
+      circle,
+      transparent,
+      transparent 11.2px,
+      #eeeeee 11.2px,
+      #eeeeee 14.4px
+    ),
+    rgba(71, 212, 255, 0);
+  background-size: 64px 64px;
+  background-position: 0 0, 32px 32px, 64px 32px;
+  background-color: rgba(71, 212, 255, 0);
+}
+
 ::-webkit-scrollbar {
   width: 0.5em !important;
   height: 0.6em;

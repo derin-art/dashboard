@@ -23,6 +23,7 @@ function DashDisplay() {
             onChangeIndex={(index) => {
               setGalleryIndex(index);
             }}
+            index={galleryIndex}
             enableMouseEvents
             className="  py-8"
           >
@@ -30,7 +31,9 @@ function DashDisplay() {
               return (
                 <div
                   key={item.name}
-                  className="  text-6xl text-white  h-full flex justify-end overflow-hidden"
+                  className={`" text-6xl ${
+                    NightState ? "text-white" : "text-green-400"
+                  }  h-full flex justify-end overflow-hidden`}
                 >
                   {item.val}
                 </div>
@@ -41,6 +44,9 @@ function DashDisplay() {
             {wallets.map((item, index) => {
               return (
                 <button
+                  onClick={() => {
+                    setGalleryIndex(index);
+                  }}
                   className={`${
                     galleryIndex === index ? "text-white" : "text-gray-400"
                   } border h-6 border-gray-600 w-6 duration-300`}
@@ -51,8 +57,14 @@ function DashDisplay() {
               );
             })}
           </div>
-          <div className="absolute text-xs text-gray-600 bottom-4 left-4 ">
-            Swipe to access wallet balance
+          <div
+            className={`absolute text-xs ${
+              NightState ? "text-gray-600" : "text-green-400"
+            } bottom-4 left-4 `}
+          >
+            Swipe{" "}
+            <span className="hidden lg:inline">or click on currency signs</span>{" "}
+            to access wallet balance
           </div>
         </div>
       </div>

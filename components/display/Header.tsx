@@ -28,8 +28,8 @@ export default function Header() {
     <div className="h-14 w-full  bottom-2 z-50 lg:top-0   fixed lg:p-0 p-2">
       <div
         className={`backdrop-blur-sm h-full  border ${
-          NightState ? "border-gray-800" : "border-gray-300"
-        } duration-300 rounded-full lg:rounded-none lg:border-x-none lg:border-t-none flex items-center justify-around`}
+          NightState ? "border-gray-800" : " border-gray-300 lg:border-gray-300"
+        } duration-300 rounded-full lg:rounded-none lg:border-x-0 lg:border-t-0 flex items-center justify-around`}
       >
         {headersButtons.map((item) => {
           return (
