@@ -1,15 +1,29 @@
 import { useState } from "react";
+import MasterCardIconTwo from "../public/icon/MasterCardIconTwo";
+import MasterCardIcon from "../public/icon/MasterCardIcon";
 import VisaIcon from "../public/icon/VisaIcon";
 import { useAppDispatch, useAppSelector } from "../hooks/useDispatch";
 
-export default function DebitCards() {
+type DebitCardsProps = {
+  masterCard: boolean;
+};
+
+export default function DebitCards(props: DebitCardsProps) {
   const [click, setClicked] = useState(false);
   const NightState = useAppSelector((state) => state.night.value.isNight);
   const randomNo = [
     [1, 5, 2, 4],
     [1, 4, 5, 6],
     [1, 3, 5, 5],
-    [, 1, 2, 3, 4],
+    [1, 2, 3, 4],
+  ];
+
+  const randomNoMaster = [
+    [1, 3, 5, 5],
+    [1, 5, 2, 4],
+
+    [1, 2, 3, 4],
+    [1, 4, 5, 6],
   ];
 
   return (
@@ -38,14 +52,21 @@ export default function DebitCards() {
               Click to rotate Card
             </div>
             <div className=" text-base mt-20">
-              <div>CVV</div>111
+              <div>CVV</div>
+              {props.masterCard ? "111" : "222"}
             </div>
             <div className="absolute bottom-2 right-4">
-              {VisaIcon(
-                `${NightState ? "fill-white" : "fill-green-400"}`,
-                "38",
-                "38"
-              )}
+              {props.masterCard
+                ? MasterCardIconTwo(
+                    `${NightState ? "fill-white" : "fill-green-400"}`,
+                    "38",
+                    "38"
+                  )
+                : VisaIcon(
+                    `${NightState ? "fill-white" : "fill-green-400"}`,
+                    "38",
+                    "38"
+                  )}
             </div>
           </div>
           <div
@@ -73,12 +94,18 @@ export default function DebitCards() {
             <div className="absolute top-4 text-xs left-4 ">
               Click to rotate Card
             </div>
-            <div className="absolute bottom-2 right-4">
-              {VisaIcon(
-                `${NightState ? "fill-white" : "fill-green-400"}`,
-                "38",
-                "38"
-              )}
+            <div className="absolute bottom-2 right-4  ">
+              {props.masterCard
+                ? MasterCardIconTwo(
+                    `${NightState ? "fill-white" : "fill-green-400"}`,
+                    "38",
+                    "38"
+                  )
+                : VisaIcon(
+                    `${NightState ? "fill-white" : "fill-green-400"}`,
+                    "38",
+                    "38"
+                  )}
             </div>
           </div>
         </div>

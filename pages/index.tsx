@@ -207,10 +207,6 @@ export default function Home() {
           <RecentTrans data={recentTrans} key="reans"></RecentTrans>
         </div>
       </div>
-
-      <div>
-        <DebitCards></DebitCards>
-      </div>
     </div>
   );
 }
