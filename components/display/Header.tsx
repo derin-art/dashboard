@@ -5,12 +5,15 @@ import React from "react";
 import CardIcon from "../../public/icon/CardIcon";
 import HomeIcon from "../../public/icon/HomeIcon";
 import SunIcon from "../../public/icon/SunIcon";
+import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../hooks/useDispatch";
 import { change } from "../../features/nigthLifeSlice";
 
 export default function Header() {
+  const router = useRouter();
   const NightState = useAppSelector((state) => state.night.value.isNight);
-
+  const isOnCard = router.pathname === "/Card";
+  const isOnHome = router.pathname === "/";
   const dispatch = useAppDispatch();
   const headersButtons = [
     { name: "/Card", icon: CardIcon, Link: true },
@@ -36,7 +39,15 @@ export default function Header() {
           if (item.Link) {
             return (
               <Link href={item.name} key={item.name}>
-                {item.icon("fill-green-400", "20", "20")}
+                {item.icon(
+                  `${
+                    router.pathname === item.name
+                      ? "fill-green-800"
+                      : "fill-green-400"
+                  } duration-300`,
+                  "20",
+                  "20"
+                )}
               </Link>
             );
           } else

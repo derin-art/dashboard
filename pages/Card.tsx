@@ -11,14 +11,14 @@ export default function Card() {
       } duration-300 h-screen w-full font-Inter`}
     >
       <div
-        className={`p-4 font-Inter text-lg pt-8 ${
+        className={`p-4 font-Inter text-lg pt-8 lg:pt-16 lg:text-3xl lg:flex ${
           NightState ? "text-white" : "text-ultraGray"
         }`}
       >
         <div>Debit</div>
         <div className="text-green-400">Cards</div>
       </div>
-      <div>
+      <div className="lg:flex lg:space-x-4">
         {cards.map((item, index) => {
           return (
             <DebitCards key={index} masterCard={item.isMaster}></DebitCards>

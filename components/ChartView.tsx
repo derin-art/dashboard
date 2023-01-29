@@ -279,6 +279,11 @@ export default function ChartView(props: ChartViewProps) {
           {timeRanges.map((item) => {
             return (
               <button
+                onClick={() => {
+                  props.timeFrameFunc(item.val);
+
+                  props.fecthDataonDateSelect(item.val);
+                }}
                 key={item.name}
                 className={` w-10 h-10 ${
                   NigthState
@@ -296,389 +301,399 @@ export default function ChartView(props: ChartViewProps) {
           })}
         </div>
       </div>
-      <div className="w-fit h-fit hidden 2xl:block relative">
-        <Line
-          data={GraphData}
-          style={{
-            width: 1350,
-            height: 550,
-            border: "0px #242424 solid",
-            borderRadius: "10px",
-            color: "#242424",
-            padding: "30px",
-          }}
-          options={{
-            layout: {},
-            elements: {
-              point: {
-                radius: 1.5,
 
-                pointStyle: "circle",
-                backgroundColor: "#242424",
-                borderColor: "#242424",
-              },
-            },
-            responsive: true,
-            scales: {
-              y: {
-                border: { display: false },
+      {props.dataArray.length === 0 ? (
+        <div className="flex items-center justify-center">
+          {" "}
+          <BounceLoader color="#4ade80"></BounceLoader>
+        </div>
+      ) : (
+        <div>
+          <div className="w-fit h-fit hidden 2xl:block relative">
+            <Line
+              data={GraphData}
+              style={{
+                width: 1350,
+                height: 550,
+                border: "0px #242424 solid",
+                borderRadius: "10px",
+                color: "#242424",
+                padding: "30px",
+              }}
+              options={{
+                layout: {},
+                elements: {
+                  point: {
+                    radius: 1.5,
 
-                grid: {
-                  display: false, // <-- this removes y-axis line
-                  lineWidth: function (context) {
-                    return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                    pointStyle: "circle",
+                    backgroundColor: "#242424",
+                    borderColor: "#242424",
                   },
-                  color: "#2E294E",
-                  drawOnChartArea: false,
-                  tickColor: "#2E294E",
                 },
-                ticks: {
-                  padding: 4,
-                  font: { family: "inter", size: 10 },
-                  color: chartXTicksColor,
-                  display: true,
-                },
-              },
-              x: {
-                bounds: "ticks",
-                border: { display: false },
+                responsive: true,
+                scales: {
+                  y: {
+                    border: { display: false },
 
-                grid: {
-                  lineWidth: 0,
-                  tickColor: props.dataArray.map((item, index) => {
-                    if (index % 4 === 0) {
-                      return "white";
-                    } else return "";
-                  }),
-                  // <-- this removes vertical lines between bars
-                },
-                ticks: {
-                  padding: 20,
-                  font: { family: "inter", size: 12 },
-                  color: chartXTicksColor,
-                  autoSkip: true,
-                  maxTicksLimit: 10,
-                  labelOffset: 4,
-                  count: 4,
-                },
-              },
-            },
-
-            plugins: {
-              title: {
-                display: false,
-                text: "Users Gained between 2016-2020",
-              },
-              legend: {
-                display: false,
-                labels: {
-                  font: {
-                    family: "var(--inter-font)",
+                    grid: {
+                      display: false, // <-- this removes y-axis line
+                      lineWidth: function (context) {
+                        return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                      },
+                      color: "#2E294E",
+                      drawOnChartArea: false,
+                      tickColor: "#2E294E",
+                    },
+                    ticks: {
+                      padding: 4,
+                      font: { family: "inter", size: 10 },
+                      color: chartXTicksColor,
+                      display: true,
+                    },
                   },
-                  color: "red",
-                },
-              },
-              tooltip: {
-                bodySpacing: 8,
-                enabled: true,
-              },
-            },
+                  x: {
+                    bounds: "ticks",
+                    border: { display: false },
 
-            borderColor: "rgba(0,22, 222, 200)",
-            backgroundColor: "rgb(255 237 213)",
-
-            animation: { delay: 1, easing: "linear" },
-            maintainAspectRatio: false,
-          }}
-        />
-      </div>
-      <div className="w-fit h-fit hidden xl:block 2xl:hidden relative">
-        <Line
-          data={GraphData}
-          style={{
-            width: 1050,
-            height: 600,
-            border: "0px #242424 solid",
-            borderRadius: "10px",
-            color: "#242424",
-            padding: "30px",
-          }}
-          options={{
-            layout: {},
-            elements: {
-              point: {
-                radius: 1.5,
-
-                pointStyle: "circle",
-                backgroundColor: "#242424",
-                borderColor: "#242424",
-              },
-            },
-            responsive: true,
-            scales: {
-              y: {
-                border: { display: false },
-
-                grid: {
-                  display: false, // <-- this removes y-axis line
-                  lineWidth: function (context) {
-                    return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                    grid: {
+                      lineWidth: 0,
+                      tickColor: props.dataArray.map((item, index) => {
+                        if (index % 4 === 0) {
+                          return "white";
+                        } else return "";
+                      }),
+                      // <-- this removes vertical lines between bars
+                    },
+                    ticks: {
+                      padding: 20,
+                      font: { family: "inter", size: 12 },
+                      color: chartXTicksColor,
+                      autoSkip: true,
+                      maxTicksLimit: 10,
+                      labelOffset: 4,
+                      count: 4,
+                    },
                   },
-                  color: "#2E294E",
-                  drawOnChartArea: false,
-                  tickColor: "#2E294E",
                 },
-                ticks: {
-                  padding: 6,
-                  font: { family: "inter", size: 10 },
-                  color: chartXTicksColor,
-                  display: true,
-                },
-              },
-              x: {
-                bounds: "ticks",
-                border: { display: false },
 
-                grid: {
-                  lineWidth: 0,
-                  tickColor: props.dataArray.map((item, index) => {
-                    if (index % 4 === 0) {
-                      return "white";
-                    } else return "";
-                  }),
-                  // <-- this removes vertical lines between bars
-                },
-                ticks: {
-                  padding: 20,
-                  font: { family: "inter", size: 12 },
-                  color: chartXTicksColor,
-                  autoSkip: true,
-                  maxTicksLimit: 10,
-                  labelOffset: 4,
-                  count: 4,
-                },
-              },
-            },
-
-            plugins: {
-              title: {
-                display: false,
-                text: "Users Gained between 2016-2020",
-              },
-              legend: {
-                display: false,
-                labels: {
-                  font: {
-                    family: "var(--inter-font)",
+                plugins: {
+                  title: {
+                    display: false,
+                    text: "Users Gained between 2016-2020",
                   },
-                  color: "red",
-                },
-              },
-              tooltip: {
-                bodySpacing: 8,
-                enabled: true,
-              },
-            },
-
-            borderColor: "rgba(0,22, 222, 200)",
-            backgroundColor: "rgb(255 237 213)",
-
-            animation: { delay: 1, easing: "linear" },
-            maintainAspectRatio: false,
-          }}
-        />
-      </div>
-      <div className="w-fit h-fit hidden lg:block xl:hidden relative">
-        <Line
-          data={GraphData}
-          style={{
-            width: 750,
-            height: 500,
-            border: "0px #242424 solid",
-            borderRadius: "10px",
-            color: "#242424",
-            padding: "30px",
-          }}
-          options={{
-            layout: {},
-            elements: {
-              point: {
-                radius: 1.5,
-
-                pointStyle: "circle",
-                backgroundColor: "#242424",
-                borderColor: "#242424",
-              },
-            },
-            responsive: true,
-            scales: {
-              y: {
-                border: { display: false },
-
-                grid: {
-                  display: false, // <-- this removes y-axis line
-                  lineWidth: function (context) {
-                    return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                  legend: {
+                    display: false,
+                    labels: {
+                      font: {
+                        family: "var(--inter-font)",
+                      },
+                      color: "red",
+                    },
                   },
-                  color: "#2E294E",
-                  drawOnChartArea: false,
-                  tickColor: "#2E294E",
-                },
-                ticks: {
-                  padding: 6,
-                  font: { family: "inter", size: 10 },
-                  color: chartXTicksColor,
-                  display: true,
-                },
-              },
-              x: {
-                bounds: "ticks",
-                border: { display: false },
-
-                grid: {
-                  lineWidth: 0,
-                  tickColor: props.dataArray.map((item, index) => {
-                    if (index % 4 === 0) {
-                      return "white";
-                    } else return "";
-                  }),
-                  // <-- this removes vertical lines between bars
-                },
-                ticks: {
-                  padding: 20,
-                  font: { family: "inter", size: 12 },
-                  color: chartXTicksColor,
-                  autoSkip: true,
-                  maxTicksLimit: 10,
-                  labelOffset: 4,
-                  count: 4,
-                },
-              },
-            },
-
-            plugins: {
-              title: {
-                display: false,
-                text: "Users Gained between 2016-2020",
-              },
-              legend: {
-                display: false,
-                labels: {
-                  font: {
-                    family: "var(--inter-font)",
+                  tooltip: {
+                    bodySpacing: 8,
+                    enabled: true,
                   },
-                  color: "red",
                 },
-              },
-              tooltip: {
-                bodySpacing: 8,
-                enabled: true,
-              },
-            },
 
-            borderColor: "rgba(0,22, 222, 200)",
-            backgroundColor: "rgb(255 237 213)",
+                borderColor: "rgba(0,22, 222, 200)",
+                backgroundColor: "rgb(255 237 213)",
 
-            animation: { delay: 1, easing: "linear" },
-            maintainAspectRatio: false,
-          }}
-        />
-      </div>
-      <div className="  block lg:hidden w-full h-fit flex items-center justify-center relative">
-        <Line
-          data={graphDetails}
-          ref={chartRef}
-          style={{
-            border: "0px #FFEFEB solid",
-            borderRadius: "5px",
-            color: "#242424",
+                animation: { delay: 1, easing: "linear" },
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
+          <div className="w-fit h-fit hidden xl:block 2xl:hidden relative">
+            <Line
+              data={GraphData}
+              style={{
+                width: 1050,
+                height: 600,
+                border: "0px #242424 solid",
+                borderRadius: "10px",
+                color: "#242424",
+                padding: "30px",
+              }}
+              options={{
+                layout: {},
+                elements: {
+                  point: {
+                    radius: 1.5,
 
-            paddingLeft: "2px",
-
-            width: "80vw",
-          }}
-          options={{
-            layout: {},
-            elements: {
-              point: {
-                radius: 0.6,
-
-                pointStyle: "circle",
-                backgroundColor: "#fafafa",
-                borderColor: "#242424",
-              },
-            },
-            scales: {
-              y: {
-                border: { display: false },
-
-                grid: {
-                  display: false, // <-- this removes y-axis line
-                  lineWidth: function (context) {
-                    return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                    pointStyle: "circle",
+                    backgroundColor: "#242424",
+                    borderColor: "#242424",
                   },
-                  color: "#2E294E",
-                  drawOnChartArea: false,
-                  tickColor: "#2E294E",
                 },
-                ticks: {
-                  padding: 4,
-                  font: { family: "inter", size: 7 },
-                  color: chartXTicksColor,
-                  display: true,
-                },
-              },
-              x: {
-                bounds: "ticks",
-                border: { display: false },
+                responsive: true,
+                scales: {
+                  y: {
+                    border: { display: false },
 
-                grid: {
-                  lineWidth: 0,
-                  tickColor: props.dataArray.map((item, index) => {
-                    if (index % 4 === 0) {
-                      return "white";
-                    } else return "";
-                  }),
-                  // <-- this removes vertical lines between bars
-                },
-                ticks: {
-                  padding: 10,
-                  font: { family: "inter", size: 8 },
-                  color: chartXTicksColor,
-                  display: true,
-                  autoSkip: true,
-                  maxTicksLimit: 10,
-                  labelOffset: 4,
-                  count: 4,
-                },
-              },
-            },
-
-            plugins: {
-              title: {
-                display: false,
-                text: "Users Gained between 2016-2020",
-              },
-              legend: {
-                display: false,
-                labels: {
-                  font: {
-                    family: "var(--inter-font)",
+                    grid: {
+                      display: false, // <-- this removes y-axis line
+                      lineWidth: function (context) {
+                        return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                      },
+                      color: "#2E294E",
+                      drawOnChartArea: false,
+                      tickColor: "#2E294E",
+                    },
+                    ticks: {
+                      padding: 6,
+                      font: { family: "inter", size: 10 },
+                      color: chartXTicksColor,
+                      display: true,
+                    },
                   },
-                  color: "red",
-                },
-              },
-              tooltip: {
-                bodySpacing: 8,
-                enabled: true,
-              },
-            },
+                  x: {
+                    bounds: "ticks",
+                    border: { display: false },
 
-            animation: { delay: 1, easing: "linear" },
-            maintainAspectRatio: false,
-          }}
-        />
-      </div>
+                    grid: {
+                      lineWidth: 0,
+                      tickColor: props.dataArray.map((item, index) => {
+                        if (index % 4 === 0) {
+                          return "white";
+                        } else return "";
+                      }),
+                      // <-- this removes vertical lines between bars
+                    },
+                    ticks: {
+                      padding: 20,
+                      font: { family: "inter", size: 12 },
+                      color: chartXTicksColor,
+                      autoSkip: true,
+                      maxTicksLimit: 10,
+                      labelOffset: 4,
+                      count: 4,
+                    },
+                  },
+                },
+
+                plugins: {
+                  title: {
+                    display: false,
+                    text: "Users Gained between 2016-2020",
+                  },
+                  legend: {
+                    display: false,
+                    labels: {
+                      font: {
+                        family: "var(--inter-font)",
+                      },
+                      color: "red",
+                    },
+                  },
+                  tooltip: {
+                    bodySpacing: 8,
+                    enabled: true,
+                  },
+                },
+
+                borderColor: "rgba(0,22, 222, 200)",
+                backgroundColor: "rgb(255 237 213)",
+
+                animation: { delay: 1, easing: "linear" },
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
+          <div className="w-fit h-fit hidden lg:block xl:hidden relative">
+            <Line
+              data={GraphData}
+              style={{
+                width: 750,
+                height: 500,
+                border: "0px #242424 solid",
+                borderRadius: "10px",
+                color: "#242424",
+                padding: "30px",
+              }}
+              options={{
+                layout: {},
+                elements: {
+                  point: {
+                    radius: 1.5,
+
+                    pointStyle: "circle",
+                    backgroundColor: "#242424",
+                    borderColor: "#242424",
+                  },
+                },
+                responsive: true,
+                scales: {
+                  y: {
+                    border: { display: false },
+
+                    grid: {
+                      display: false, // <-- this removes y-axis line
+                      lineWidth: function (context) {
+                        return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                      },
+                      color: "#2E294E",
+                      drawOnChartArea: false,
+                      tickColor: "#2E294E",
+                    },
+                    ticks: {
+                      padding: 6,
+                      font: { family: "inter", size: 10 },
+                      color: chartXTicksColor,
+                      display: true,
+                    },
+                  },
+                  x: {
+                    bounds: "ticks",
+                    border: { display: false },
+
+                    grid: {
+                      lineWidth: 0,
+                      tickColor: props.dataArray.map((item, index) => {
+                        if (index % 4 === 0) {
+                          return "white";
+                        } else return "";
+                      }),
+                      // <-- this removes vertical lines between bars
+                    },
+                    ticks: {
+                      padding: 20,
+                      font: { family: "inter", size: 12 },
+                      color: chartXTicksColor,
+                      autoSkip: true,
+                      maxTicksLimit: 10,
+                      labelOffset: 4,
+                      count: 4,
+                    },
+                  },
+                },
+
+                plugins: {
+                  title: {
+                    display: false,
+                    text: "Users Gained between 2016-2020",
+                  },
+                  legend: {
+                    display: false,
+                    labels: {
+                      font: {
+                        family: "var(--inter-font)",
+                      },
+                      color: "red",
+                    },
+                  },
+                  tooltip: {
+                    bodySpacing: 8,
+                    enabled: true,
+                  },
+                },
+
+                borderColor: "rgba(0,22, 222, 200)",
+                backgroundColor: "rgb(255 237 213)",
+
+                animation: { delay: 1, easing: "linear" },
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
+          <div className="  block lg:hidden w-full h-fit flex items-center justify-center relative">
+            <Line
+              data={graphDetails}
+              ref={chartRef}
+              style={{
+                border: "0px #FFEFEB solid",
+                borderRadius: "5px",
+                color: "#242424",
+
+                paddingLeft: "2px",
+
+                width: "80vw",
+              }}
+              options={{
+                layout: {},
+                elements: {
+                  point: {
+                    radius: 0.6,
+
+                    pointStyle: "circle",
+                    backgroundColor: "#fafafa",
+                    borderColor: "#242424",
+                  },
+                },
+                scales: {
+                  y: {
+                    border: { display: false },
+
+                    grid: {
+                      display: false, // <-- this removes y-axis line
+                      lineWidth: function (context) {
+                        return context?.index === 0 ? 0 : 1; // <-- this removes the base line
+                      },
+                      color: "#2E294E",
+                      drawOnChartArea: false,
+                      tickColor: "#2E294E",
+                    },
+                    ticks: {
+                      padding: 4,
+                      font: { family: "inter", size: 7 },
+                      color: chartXTicksColor,
+                      display: true,
+                    },
+                  },
+                  x: {
+                    bounds: "ticks",
+                    border: { display: false },
+
+                    grid: {
+                      lineWidth: 0,
+                      tickColor: props.dataArray.map((item, index) => {
+                        if (index % 4 === 0) {
+                          return "white";
+                        } else return "";
+                      }),
+                      // <-- this removes vertical lines between bars
+                    },
+                    ticks: {
+                      padding: 10,
+                      font: { family: "inter", size: 8 },
+                      color: chartXTicksColor,
+                      display: true,
+                      autoSkip: true,
+                      maxTicksLimit: 10,
+                      labelOffset: 4,
+                      count: 4,
+                    },
+                  },
+                },
+
+                plugins: {
+                  title: {
+                    display: false,
+                    text: "Users Gained between 2016-2020",
+                  },
+                  legend: {
+                    display: false,
+                    labels: {
+                      font: {
+                        family: "var(--inter-font)",
+                      },
+                      color: "red",
+                    },
+                  },
+                  tooltip: {
+                    bodySpacing: 8,
+                    enabled: true,
+                  },
+                },
+
+                animation: { delay: 1, easing: "linear" },
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

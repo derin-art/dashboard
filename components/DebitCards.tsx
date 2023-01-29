@@ -26,6 +26,8 @@ export default function DebitCards(props: DebitCardsProps) {
     [1, 4, 5, 6],
   ];
 
+  const iterateArr = props.masterCard ? randomNoMaster : randomNo;
+
   return (
     <div className="p-4">
       <div
@@ -77,7 +79,7 @@ export default function DebitCards(props: DebitCardsProps) {
             } relative rounded-lg`}
           >
             <div className="items-center justify-center space-x-4 flex w-full  text-green-400 text-xl mt-20">
-              {randomNo.map((item, index) => {
+              {iterateArr.map((item, index) => {
                 return (
                   <span key={index} className="flex">
                     {item.map((no) => {

@@ -33,6 +33,7 @@ export type coinGeckoArr = number[][];
 
 export default function Home() {
   const toastId: any = useRef(null);
+  const NightState = useAppSelector((state) => state.night.value.isNight);
 
   const customId = "custom-id-yes";
   const [coinData, setCoinData] = useState({
@@ -120,7 +121,7 @@ export default function Home() {
           toast.error("Search Error, Please check your internet connection", {
             className: "text-xs",
             toastId: customId,
-            theme: "dark",
+            theme: NightState ? "dark" : "light",
           });
         }
 
@@ -140,6 +141,7 @@ export default function Home() {
           toast.error("Search Error, Please check your internet connection", {
             className: "text-xs",
             toastId: customId,
+            theme: NightState ? "dark" : "light",
           });
         }
 
@@ -154,8 +156,6 @@ export default function Home() {
         }
       });
   };
-
-  const NightState = useAppSelector((state) => state.night.value.isNight);
 
   return (
     <div
@@ -182,27 +182,23 @@ export default function Home() {
           <DashDisplay></DashDisplay>
         </div>
 
-        {coinData.data.length === 0 ? (
-          <BounceLoader color="#4ade80"></BounceLoader>
-        ) : (
-          <ChartView
-            clickedSetRange={clickedSetRange}
-            setClickedSetRange={setClickedSetRange}
-            key="ChartView"
-            coinId={coinId}
-            fecthDataonCoinSelect={fecthDataonCoinSelect}
-            fecthDataonDateSelect={fecthDataonDateSelect}
-            timeFrameFunc={timeFrameFunc}
-            timeFrame={timeFrame}
-            coinRes={coinSearchRes}
-            fetchCoinList={fetchCoin}
-            searchName={searchName}
-            setSearchName={setSearchName}
-            dataArray={coinData.data}
-            setCoinId={setCoinId}
-            setTimeFrame={setTimeFrame}
-          ></ChartView>
-        )}
+        <ChartView
+          clickedSetRange={clickedSetRange}
+          setClickedSetRange={setClickedSetRange}
+          key="ChartView"
+          coinId={coinId}
+          fecthDataonCoinSelect={fecthDataonCoinSelect}
+          fecthDataonDateSelect={fecthDataonDateSelect}
+          timeFrameFunc={timeFrameFunc}
+          timeFrame={timeFrame}
+          coinRes={coinSearchRes}
+          fetchCoinList={fetchCoin}
+          searchName={searchName}
+          setSearchName={setSearchName}
+          dataArray={coinData.data}
+          setCoinId={setCoinId}
+          setTimeFrame={setTimeFrame}
+        ></ChartView>
         <div className="w-full">
           <RecentTrans data={recentTrans} key="reans"></RecentTrans>
         </div>
