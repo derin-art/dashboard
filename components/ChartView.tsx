@@ -10,9 +10,11 @@ import {
 } from "chart.js";
 
 import { coinGeckoArr } from "../pages/index";
-import { useAppSelector } from "../hooks/useDispatch";
+import { setDuration } from "../features/nigthLifeSlice";
+import { useAppSelector, useAppDispatch } from "../hooks/useDispatch";
 import { Gradient } from "chartjs-plugin-gradient/types/options";
 import { BounceLoader } from "react-spinners";
+import { setCoinId } from "../features/nigthLifeSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import gradient from "chartjs-plugin-gradient";
 import BitcoinIcon from "../public/icon/BitcoinIcon";
@@ -69,7 +71,25 @@ type ChartViewProps = {
 };
 
 export default function ChartView(props: ChartViewProps) {
+  const dispatch = useAppDispatch();
   const NigthState = useAppSelector((state) => state.night.value.isNight);
+  const coindIdSelect = useAppSelector((state) => state.night.value.coinId);
+  const blurVariant = {
+    out: {
+      opacity: 0,
+      x: 20,
+      transition: {
+        duration: 0.26,
+      },
+    },
+    in: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.46,
+      },
+    },
+  };
   const chartXTicksColor = NigthState ? "white" : "black";
   const backgroundColor = NigthState
     ? "rgba(189, 211, 197, 0.1)"
@@ -190,7 +210,8 @@ export default function ChartView(props: ChartViewProps) {
                   return (
                     <button
                       onClick={() => {
-                        props.setCoinId(coin.id);
+                        dispatch(setCoinId(coin.id));
+
                         props.fecthDataonCoinSelect(coin.id);
                       }}
                       className="p-2 mb-2 border border-gray-600"
@@ -215,43 +236,53 @@ export default function ChartView(props: ChartViewProps) {
       </div>
 
       <div className="font-Unbounded mb-2 text-green-400 lg:text-3xl flex relative">
-        {props.coinId}
+        <div className="w-4/5 lg:w-full"> {coindIdSelect}</div>
         <div
-          className={`${
-            props.clickedSetRange ? "w-fit" : "w-10"
-          } h-10 duration-300 ${
+          className={`${props.clickedSetRange ? "w-fit" : "w-fit"} h-10  ${
             NigthState ? "border-gray-600" : "border-gray-300"
           } border-y absolute right-0 text-[9px] ${
             NigthState ? "text-white" : "text-ultraGray"
           } font-inter lg:hidden rounded-full top-0 flex items-center justify-center`}
         >
-          {timeRanges.map((item, index) => {
-            if (item.val !== props.timeFrame) {
-              return (
-                <button
-                  key={index}
-                  onClick={() => {
-                    props.timeFrameFunc(item.val);
-                    props.setClickedSetRange((prev: any) => !prev);
-                    props.fecthDataonDateSelect(item.val);
-                  }}
-                  className={`${
-                    props.clickedSetRange ? "" : "hidden"
-                  } w-10 h-10 border duration-300 rounded-full ${
-                    NigthState
-                      ? props.timeFrame === item.val
-                        ? "border-green-400"
-                        : "border-gray-600"
-                      : props.timeFrame === item.val
-                      ? "border-green-400"
-                      : "border-gray-400"
-                  }`}
-                >
-                  {item.name}
-                </button>
-              );
-            }
-          })}
+          <AnimatePresence>
+            <motion.div
+              variants={blurVariant}
+              animate="in"
+              initial="out"
+              exit={"out"}
+              key={props.clickedSetRange.toString()}
+            >
+              {props.clickedSetRange &&
+                timeRanges.map((item, index) => {
+                  if (item.val !== props.timeFrame) {
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          props.timeFrameFunc(item.val);
+                          dispatch(setDuration(item.val));
+                          props.setClickedSetRange((prev: any) => !prev);
+                          props.fecthDataonDateSelect(item.val);
+                        }}
+                        className={`${
+                          props.clickedSetRange ? "" : "hidden"
+                        } w-10 h-10 border duration-300 rounded-full ${
+                          NigthState
+                            ? props.timeFrame === item.val
+                              ? "border-green-400"
+                              : "border-gray-600"
+                            : props.timeFrame === item.val
+                            ? "border-green-400"
+                            : "border-gray-400"
+                        }`}
+                      >
+                        {item.name}
+                      </button>
+                    );
+                  }
+                })}
+            </motion.div>
+          </AnimatePresence>
           <button
             onClick={() => {
               props.setClickedSetRange((prev: any) => !prev);
@@ -280,6 +311,7 @@ export default function ChartView(props: ChartViewProps) {
             return (
               <button
                 onClick={() => {
+                  dispatch(setDuration(item.val));
                   props.timeFrameFunc(item.val);
 
                   props.fecthDataonDateSelect(item.val);
@@ -311,7 +343,7 @@ export default function ChartView(props: ChartViewProps) {
         <div>
           <div className="w-fit h-fit hidden 2xl:block relative">
             <Line
-              data={GraphData}
+              data={graphDetails}
               style={{
                 width: 1350,
                 height: 550,
@@ -407,7 +439,7 @@ export default function ChartView(props: ChartViewProps) {
           </div>
           <div className="w-fit h-fit hidden xl:block 2xl:hidden relative">
             <Line
-              data={GraphData}
+              data={graphDetails}
               style={{
                 width: 1050,
                 height: 600,
@@ -503,7 +535,7 @@ export default function ChartView(props: ChartViewProps) {
           </div>
           <div className="w-fit h-fit hidden lg:block xl:hidden relative">
             <Line
-              data={GraphData}
+              data={graphDetails}
               style={{
                 width: 750,
                 height: 500,

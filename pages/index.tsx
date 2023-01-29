@@ -4,8 +4,14 @@ import ChartView from "../components/ChartView";
 import styles from "../styles/Home.module.css";
 import coinGeckoChartData from "../mockData/coinGeckoChartData";
 import { PropagateLoader, BounceLoader } from "react-spinners";
-import { change, setGraphData, setResponse } from "../features/nigthLifeSlice";
+import {
+  change,
+  setGraphData,
+  setResponse,
+  setDuration,
+} from "../features/nigthLifeSlice";
 import axios from "axios";
+import parseJson from "parse-json";
 import { useAppSelector, useAppDispatch } from "../hooks/useDispatch";
 import { ToastContainer, toast } from "react-toastify";
 import RecentTrans from "../components/RecentTrans";
@@ -34,6 +40,10 @@ export type coinGeckoArr = number[][];
 export default function Home() {
   const toastId: any = useRef(null);
   const NightState = useAppSelector((state) => state.night.value.isNight);
+  const CoinIdRedux = useAppSelector((state) => state.night.value.coinId);
+  const ReduxDurationState = useAppSelector(
+    (state) => state.night.value.duration
+  );
 
   const customId = "custom-id-yes";
   const [coinData, setCoinData] = useState({
@@ -60,31 +70,85 @@ export default function Home() {
 
   const dispatch = useAppDispatch();
 
-  const fecthData = async () => {
+  const reduxDurationDuration = (duration: string) => {
+    dispatch(setDuration(duration));
+  };
+
+  const fecthCurrentData = async () => {
+    let prevCoinId = "bitcoin";
+    if (typeof window !== "undefined") {
+      const something = window.localStorage.getItem("PrevCoinData");
+      console.log("ms", something);
+      if (something) {
+        const localStorageCoinData = parseJson(something);
+        console.log(localStorageCoinData, "ss");
+        if (localStorageCoinData.coinId) {
+          prevCoinId = localStorageCoinData.coinId;
+        }
+      }
+    }
+    console.log("prevCOinf", prevCoinId);
     await axios
       .get(
-        `https://api.coingecko.com/api/v3/coins/bitcoin/ohlc?vs_currency=usd&days=180`
+        `https://api.coingecko.com/api/v3/coins/${prevCoinId}/ohlc?vs_currency=usd&days=${ReduxDurationState}`
       )
       .then((data) => {
-        console.log(data.data);
+        if (data) {
+          console.log(data.data);
+          dispatch(setGraphData(data.data));
+          dispatch(setResponse(data.status));
+          const localStorageData = {
+            data: data.data,
+            coindId: CoinIdRedux,
+            coinDuration: ReduxDurationState,
+          };
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(
+              "PrevCoinData",
+              JSON.stringify(localStorageData)
+            );
+          }
+        }
       })
       .catch((err) => {
+        if (!toast.isActive(toastId.current)) {
+          toast.info("Fetch Error, Graph Populated with previous Data", {
+            className: "text-xs",
+            toastId: customId,
+          });
+        }
         console.log(err);
         return;
       });
   };
 
+  useEffect(() => {
+    fecthCurrentData();
+  }, []);
+
   const fecthDataonCoinSelect = async (id: string = coinId) => {
     setCoinData((prev) => ({ ...prev, data: [] }));
     await axios
       .get(
-        `https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=${timeFrame}`
+        `https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=${ReduxDurationState}`
       )
       .then((data) => {
         console.log(data.data);
         if (data) {
           dispatch(setGraphData(data.data));
           dispatch(setResponse(data.status));
+          const localStorageData = {
+            data: data.data,
+            coindId: CoinIdRedux,
+            coinDuration: ReduxDurationState,
+          };
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(
+              "PrevCoinData",
+              JSON.stringify(localStorageData)
+            );
+          }
+
           setCoinData((prev) => ({ ...prev, data: data.data }));
         }
       })
@@ -100,7 +164,7 @@ export default function Home() {
       });
   };
 
-  const fecthDataonDateSelect = async (time: string = timeFrame) => {
+  const fecthDataonDateSelect = async (time: string = ReduxDurationState) => {
     setCoinData((prev) => ({ ...prev, data: [] }));
     await axios
       .get(
@@ -113,6 +177,17 @@ export default function Home() {
           dispatch(setGraphData(data.data));
           dispatch(setResponse(data.status));
           setCoinData((prev) => ({ ...prev, data: data.data }));
+          const localStorageData = {
+            data: data.data,
+            coindId: CoinIdRedux,
+            coinDuration: ReduxDurationState,
+          };
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(
+              "PrevCoinData",
+              JSON.stringify(localStorageData)
+            );
+          }
         }
       })
       .catch((err) => {
@@ -153,6 +228,16 @@ export default function Home() {
           setCoinSearchRes((prev) => {
             return { ...prev, data: data.data, res: data.status };
           });
+
+          const localStorageData = {
+            data: data.data,
+          };
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(
+              "PrevCoinList",
+              JSON.stringify(localStorageData)
+            );
+          }
         }
       });
   };
@@ -189,8 +274,8 @@ export default function Home() {
           coinId={coinId}
           fecthDataonCoinSelect={fecthDataonCoinSelect}
           fecthDataonDateSelect={fecthDataonDateSelect}
-          timeFrameFunc={timeFrameFunc}
-          timeFrame={timeFrame}
+          timeFrameFunc={reduxDurationDuration}
+          timeFrame={ReduxDurationState}
           coinRes={coinSearchRes}
           fetchCoinList={fetchCoin}
           searchName={searchName}
