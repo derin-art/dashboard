@@ -187,6 +187,18 @@ export default function ChartView(props: ChartViewProps) {
             placeholder={"Search and select a coin"}
             className="w-11/12 text-sm ml-2 mr-[14px] font-inter h-fit bg-transparent focus:outline-none focus:ring-b-[1px] text-green-400 focus:ring-gray-600"
           ></input>
+          <button
+            onClick={() => {
+              if (!props.searchName) return;
+              props.setSearchName("");
+            }}
+            disabled={props.searchName ? false : true}
+            className={`duration-300 ${
+              props.searchName ? "opacity-100" : "opacity-0"
+            }  text-red-500 mr-2 lg:absolute right-6 p-2 h-2 w-2 flex border-red-500 items-center justify-center`}
+          >
+            x
+          </button>
         </div>
         <div
           className={`h-full overflow-auto ${

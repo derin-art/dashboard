@@ -127,13 +127,27 @@ export default function Home() {
   }, []);
 
   const fecthDataonCoinSelect = async (id: string = coinId) => {
+    console.log("You've got mail", id, ReduxDurationState);
     setCoinData((prev) => ({ ...prev, data: [] }));
+
     await axios
       .get(
         `https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=${ReduxDurationState}`
       )
       .then((data) => {
+        console.log(data);
         console.log(data.data);
+        if (data.data.length === 0) {
+          console.log("sent");
+          toast.info(
+            "No data available for this coin for selected date range 😓",
+            {
+              className: "text-xs",
+              toastId: customId,
+              theme: NightState ? "dark" : "light",
+            }
+          );
+        }
         if (data) {
           dispatch(setGraphData(data.data));
           dispatch(setResponse(data.status));
@@ -174,6 +188,16 @@ export default function Home() {
         console.log("red", data);
         console.log(data.data);
         if (data) {
+          if (data.data === []) {
+            toast.info(
+              "No data avialable for this coin for selected date range 😓",
+              {
+                className: "text-xs",
+                toastId: customId,
+                theme: NightState ? "dark" : "light",
+              }
+            );
+          }
           dispatch(setGraphData(data.data));
           dispatch(setResponse(data.status));
           setCoinData((prev) => ({ ...prev, data: data.data }));
@@ -205,28 +229,22 @@ export default function Home() {
   };
 
   const fetchCoin = async () => {
-    const data = await axios
-      .get("https://api.coingecko.com/api/v3/coins/list")
-      .catch((err) => {
-        console.log(err);
-        setCoinSearchRes((prev: any) => {
-          return { ...prev, data: [], res: 500 };
-        });
-        if (!toast.isActive(toastId.current)) {
-          toast.error("Search Error, Please check your internet connection", {
-            className: "text-xs",
-            toastId: customId,
-            theme: NightState ? "dark" : "light",
-          });
-        }
+    let localStorageList;
+    if (typeof window !== "undefined") {
+      localStorageList = parseJson(
+        window.localStorage.getItem("PrevCoinSearchList")
+      );
+    }
+    if (localStorageList) {
+      setCoinSearchRes((prev: any) => {
+        return { ...prev, data: [], res: 500 };
+      });
 
-        return;
-      })
-      .then((data: any) => {
+      const setMulitpleStates = (data: any) => {
         console.log(data);
         if (data) {
           setCoinSearchRes((prev) => {
-            return { ...prev, data: data.data, res: data.status };
+            return { ...prev, data: data.data, res: 200 };
           });
 
           const localStorageData = {
@@ -234,12 +252,51 @@ export default function Home() {
           };
           if (typeof window !== "undefined") {
             window.localStorage.setItem(
-              "PrevCoinList",
+              "PrevCoinSearchList",
               JSON.stringify(localStorageData)
             );
           }
         }
-      });
+      };
+
+      setMulitpleStates(localStorageList);
+    } else {
+      const data = await axios
+        .get("https://api.coingecko.com/api/v3/coins/list")
+        .catch((err) => {
+          console.log(err);
+          setCoinSearchRes((prev: any) => {
+            return { ...prev, data: [], res: 500 };
+          });
+          if (!toast.isActive(toastId.current)) {
+            toast.error("Search Error, Please check your internet connection", {
+              className: "text-xs",
+              toastId: customId,
+              theme: NightState ? "dark" : "light",
+            });
+          }
+
+          return;
+        })
+        .then((data: any) => {
+          console.log(data);
+          if (data) {
+            setCoinSearchRes((prev) => {
+              return { ...prev, data: data.data, res: data.status };
+            });
+
+            const localStorageData = {
+              data: data.data,
+            };
+            if (typeof window !== "undefined") {
+              window.localStorage.setItem(
+                "PrevCoinSearchList",
+                JSON.stringify(localStorageData)
+              );
+            }
+          }
+        });
+    }
   };
 
   return (
