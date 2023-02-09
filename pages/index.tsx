@@ -78,7 +78,7 @@ export default function Home() {
     let prevCoinId = "bitcoin";
     if (typeof window !== "undefined") {
       const something = window.localStorage.getItem("PrevCoinData");
-      console.log("ms", something);
+
       if (something) {
         const localStorageCoinData = parseJson(something);
         console.log(localStorageCoinData, "ss");
