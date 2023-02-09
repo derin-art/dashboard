@@ -184,7 +184,7 @@ export default function ChartView(props: ChartViewProps) {
               props.fetchCoinList();
             }}
             value={props.searchName}
-            placeholder={"Search for a coin"}
+            placeholder={"Search and select a coin"}
             className="w-11/12 text-sm ml-2 mr-[14px] font-inter h-fit bg-transparent focus:outline-none focus:ring-b-[1px] text-green-400 focus:ring-gray-600"
           ></input>
         </div>
