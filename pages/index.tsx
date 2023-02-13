@@ -188,7 +188,7 @@ export default function Home() {
         console.log("red", data);
         console.log(data.data);
         if (data) {
-          if (data.data === []) {
+          if (data.data.length === 0) {
             toast.info(
               "No data avialable for this coin for selected date range 😓",
               {
